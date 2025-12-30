@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 
 const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export async function GET(request: Request, { params }: { params: { movieId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ movieId: string }> }) {
 	if (!BACKEND_URL) {
 		return NextResponse.json({ error: "Backend URL is not configured" }, { status: 500 });
 	}
 
 	try {
-		const { movieId } = await params;
+		const movieId = (await params).movieId;
 
 		if (!movieId) {
 			return NextResponse.json({ error: "Movie ID is required" }, { status: 400 });
