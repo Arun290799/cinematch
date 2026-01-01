@@ -30,8 +30,8 @@ export default function LoginPage() {
 			});
 
 			if (!res.ok) {
-				const message = await res.text();
-				throw new Error(message || "Sign in failed");
+				const data = await res.json();
+				throw new Error(data?.message || "Sign in failed");
 			}
 
 			await refreshAuth();

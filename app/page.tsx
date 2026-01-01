@@ -6,6 +6,7 @@ import MovieCard from "@/components/MovieCard";
 import { ChevronDown, X, Heart } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import Link from "next/link";
+import { languages } from "@/src/utils/common";
 
 type Movie = {
 	id: number;
@@ -26,16 +27,11 @@ export default function Home() {
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [search, setSearch] = useState("");
-	const [languages, setLanguages] = useState<string[]>([]);
+	const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 	const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
 	const languageDropdownRef = useRef<HTMLDivElement>(null);
 	const [totalPages, setTotalPages] = useState(1);
 	const debouncedSearchQuery = useDebounce(search, 500);
-	const languageOptions = [
-		{ value: "en", label: "English" },
-		{ value: "te", label: "Telugu" },
-		{ value: "hi", label: "Hindi" },
-	];
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -53,8 +49,10 @@ export default function Home() {
 	const toggleLanguage = (language: string) => {
 		setMovies([]);
 		setPage(1);
-		setLanguages((prev) => {
-			let newLanguages = prev.includes(language) ? prev.filter((lang) => lang !== language) : [...prev, language];
+		setSelectedLanguages((prev: string[]) => {
+			let newLanguages = prev.includes(language)
+				? prev.filter((lang: string) => lang !== language)
+				: [...prev, language];
 			return newLanguages.length ? newLanguages : [];
 		});
 	};
@@ -76,8 +74,8 @@ export default function Home() {
 					params.set("search", debouncedSearchQuery.trim());
 				}
 
-				if (languages.length) {
-					params.set("languages", languages.join(","));
+				if (selectedLanguages.length) {
+					params.set("languages", selectedLanguages.join(","));
 				}
 
 				params.set("page", String(page));
@@ -112,7 +110,7 @@ export default function Home() {
 		return () => {
 			active = false;
 		};
-	}, [isAuthenticated, page, debouncedSearchQuery, languages]);
+	}, [isAuthenticated, page, debouncedSearchQuery, selectedLanguages]);
 
 	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setMovies([]);
@@ -215,12 +213,14 @@ export default function Home() {
 							className="flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border border-border bg-input px-4 py-2.5 text-left text-sm text-foreground shadow-sm transition-all duration-200 hover:border-accent focus:border-accent focus:outline-none sm:w-48"
 						>
 							<span className="truncate">
-								{languages.length === 0
+								{selectedLanguages.length === 0
 									? "Select languages"
-									: languages
+									: selectedLanguages
 											.map(
-												(lang) =>
-													languageOptions.find((opt) => opt.value === lang)?.label || lang
+												(lang: string) =>
+													languages.find(
+														(opt: { code: string; name: string }) => opt.code === lang
+													)?.name || lang
 											)
 											.join(", ")}
 							</span>
@@ -234,19 +234,19 @@ export default function Home() {
 						{isLanguageDropdownOpen && (
 							<div className="absolute right-0 z-50 mt-2 w-full rounded-xl border border-border bg-card shadow-xl backdrop-blur-sm sm:w-56">
 								<div className="max-h-60 overflow-y-auto p-2">
-									{languageOptions.map((option) => (
+									{languages.map((option: { code: string; name: string }) => (
 										<div
-											key={option.value}
+											key={option.code}
 											className="flex items-center rounded-lg px-3 py-2.5 text-sm text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-150"
-											onClick={() => toggleLanguage(option.value)}
+											onClick={() => toggleLanguage(option.code)}
 										>
 											<input
 												type="checkbox"
-												checked={languages.includes(option.value)}
+												checked={selectedLanguages.includes(option.code)}
 												onChange={() => {}}
 												className="h-4 w-4 rounded border-border bg-input text-accent focus:ring-2 focus:ring-accent/20 focus:ring-offset-2 focus:ring-offset-background"
 											/>
-											<span className="ml-3 font-medium">{option.label}</span>
+											<span className="ml-3 font-medium">{option.name}</span>
 										</div>
 									))}
 								</div>
