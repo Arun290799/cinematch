@@ -29,6 +29,7 @@ export default function Home() {
 	const [search, setSearch] = useState("");
 	const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 	const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+	const [tempSelectedLanguages, setTempSelectedLanguages] = useState<string[]>([]);
 	const languageDropdownRef = useRef<HTMLDivElement>(null);
 	const [totalPages, setTotalPages] = useState(1);
 	const debouncedSearchQuery = useDebounce(search, 500);
@@ -36,7 +37,8 @@ export default function Home() {
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
-				setIsLanguageDropdownOpen(false);
+				// Don't close on outside click, keep selections for user to save
+				// setIsLanguageDropdownOpen(false);
 			}
 		};
 
@@ -46,15 +48,35 @@ export default function Home() {
 		};
 	}, []);
 
+	// Sync temp selections when dropdown opens
+	useEffect(() => {
+		if (isLanguageDropdownOpen) {
+			setTempSelectedLanguages(selectedLanguages);
+		}
+	}, [isLanguageDropdownOpen, selectedLanguages]);
+
 	const toggleLanguage = (language: string) => {
-		setMovies([]);
-		setPage(1);
-		setSelectedLanguages((prev: string[]) => {
+		setTempSelectedLanguages((prev: string[]) => {
 			let newLanguages = prev.includes(language)
 				? prev.filter((lang: string) => lang !== language)
 				: [...prev, language];
-			return newLanguages.length ? newLanguages : [];
+			return newLanguages;
 		});
+	};
+
+	const applyLanguageFilter = () => {
+		setMovies([]);
+		setPage(1);
+		setSelectedLanguages(tempSelectedLanguages);
+		setIsLanguageDropdownOpen(false);
+	};
+
+	const clearLanguageFilter = () => {
+		setTempSelectedLanguages([]);
+		setSelectedLanguages([]);
+		setMovies([]);
+		setPage(1);
+		setIsLanguageDropdownOpen(false);
 	};
 
 	const handleLanguageDropdown = () => {
@@ -203,14 +225,17 @@ export default function Home() {
 					</div>
 				</div>
 				<div className="flex items-center gap-3">
-					<label htmlFor="languages" className="text-sm font-medium text-foreground whitespace-nowrap">
+					<label
+						htmlFor="languages"
+						className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap"
+					>
 						Languages
 					</label>
 					<div className="relative" ref={languageDropdownRef}>
 						<button
 							type="button"
 							onClick={handleLanguageDropdown}
-							className="flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border border-border bg-input px-4 py-2.5 text-left text-sm text-foreground shadow-sm transition-all duration-200 hover:border-accent focus:border-accent focus:outline-none sm:w-48"
+							className="flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-left text-sm text-gray-700 shadow-sm transition-all duration-200 hover:border-gray-900 focus:border-gray-900 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-gray-600 min-w-48"
 						>
 							<span className="truncate">
 								{selectedLanguages.length === 0
@@ -225,30 +250,49 @@ export default function Home() {
 											.join(", ")}
 							</span>
 							<ChevronDown
-								className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
+								className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
 									isLanguageDropdownOpen ? "rotate-180" : ""
 								}`}
 							/>
 						</button>
 
 						{isLanguageDropdownOpen && (
-							<div className="absolute right-0 z-50 mt-2 w-full rounded-xl border border-border bg-card shadow-xl backdrop-blur-sm sm:w-56">
+							<div className="absolute right-0 z-50 mt-2 w-full rounded-xl border border-gray-300 bg-white shadow-xl backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900 min-w-48 sm:w-56">
 								<div className="max-h-60 overflow-y-auto p-2">
 									{languages.map((option: { code: string; name: string }) => (
 										<div
 											key={option.code}
-											className="flex items-center rounded-lg px-3 py-2.5 text-sm text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-150"
+											className="flex items-center rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-150 dark:text-gray-100 dark:hover:bg-gray-800"
 											onClick={() => toggleLanguage(option.code)}
 										>
 											<input
 												type="checkbox"
-												checked={selectedLanguages.includes(option.code)}
+												checked={tempSelectedLanguages.includes(option.code)}
 												onChange={() => {}}
-												className="h-4 w-4 rounded border-border bg-input text-accent focus:ring-2 focus:ring-accent/20 focus:ring-offset-2 focus:ring-offset-background"
+												className="h-4 w-4 rounded border-gray-300 bg-white text-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
 											/>
 											<span className="ml-3 font-medium">{option.name}</span>
 										</div>
 									))}
+								</div>
+								{/* Action Buttons */}
+								<div className="border-t border-gray-200 p-2 dark:border-gray-700">
+									<div className="flex gap-2">
+										<button
+											type="button"
+											onClick={clearLanguageFilter}
+											className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+										>
+											Clear
+										</button>
+										<button
+											type="button"
+											onClick={applyLanguageFilter}
+											className="flex-1 rounded-lg bg-blue-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-blue-600"
+										>
+											Apply ({tempSelectedLanguages.length})
+										</button>
+									</div>
 								</div>
 							</div>
 						)}
