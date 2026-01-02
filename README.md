@@ -2,6 +2,10 @@
 
 A modern, responsive movie discovery and recommendation platform built with Next.js, TypeScript, and Tailwind CSS.
 
+## 🔗 Links
+
+-   **Live Demo**: https://cinematch-jade.vercel.app/
+
 ## 🎬 Features
 
 ### 🎯 Core Functionality
@@ -82,10 +86,6 @@ A modern, responsive movie discovery and recommendation platform built with Next
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🔗 Links
-
--   **Live Demo**: [Your deployed application URL]
 
 ---
 

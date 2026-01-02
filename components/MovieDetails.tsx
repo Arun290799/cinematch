@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Star, Calendar, Globe, Clock, Play, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import { getLanguageName } from "@/src/utils/common";
 interface MovieDetailsProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -25,6 +25,12 @@ interface MovieDetails {
 	tagline?: string;
 	status?: string;
 	production_companies?: { name: string; logo_path: string | null }[];
+	trailer?: {
+		key: string;
+		name: string;
+		site: string;
+		type: string;
+	} | null;
 }
 
 export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsProps) {
@@ -32,19 +38,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 	const [movie, setMovie] = useState<MovieDetails | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const languagesMap = new Map<string, string>([
-		["en", "English"],
-		["te", "Telugu"],
-		["hi", "Hindi"],
-		["ta", "Tamil"],
-		["kn", "Kannada"],
-		["gu", "Gujarati"],
-		["ml", "Malayalam"],
-		["pa", "Punjabi"],
-		["mr", "Marathi"],
-		["or", "Oriya"],
-		["ur", "Urdu"],
-	]);
+	const [showTrailer, setShowTrailer] = useState(false);
 	useEffect(() => {
 		if (!isOpen || !movieId) return;
 
@@ -52,7 +46,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 			setIsLoading(true);
 			setError(null);
 			try {
-				const response = await fetch(`/api/details/${movieId}`, {
+				const response = await fetch(`/api/details/${movieId}?include_trailer=true`, {
 					credentials: "include",
 				});
 
@@ -217,9 +211,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 													{movie.language && (
 														<span className="flex items-center gap-1">
 															<Globe className="h-4 w-4" />
-															{languagesMap.get(movie.language)
-																? languagesMap.get(movie.language)
-																: movie.language}
+															{getLanguageName(movie.language)}
 														</span>
 													)}
 												</motion.div>
@@ -268,29 +260,57 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														<p className="text-gray-300">{movie.status}</p>
 													</motion.div>
 												)}
+
 												{/* Action Buttons */}
 												<motion.div
-													className="mt-8 flex flex-wrap gap-3 hidden"
+													className="mt-8 flex flex-wrap gap-3"
 													initial={{ opacity: 0, y: 10 }}
 													animate={{ opacity: 1, y: 0 }}
 													transition={{ delay: 0.7 }}
 												>
-													<button
-														className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 font-medium text-white transition hover:bg-blue-700 hide"
-														onClick={() => {
-															router.push(`/watch/${movie.id}`);
-														}}
-													>
-														<Play className="h-5 w-5" />
-														Watch Now
-													</button>
-													<button
-														className="rounded-lg border border-gray-600 bg-transparent px-6 py-2.5 font-medium text-white transition hover:bg-gray-800"
-														onClick={onClose}
-													>
-														Close
-													</button>
+													{movie.trailer && (
+														<>
+															<button
+																className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-500/90 to-red-600/90 px-6 py-2.5 font-medium text-white transition hover:from-red-600/95 hover:to-red-700/95 backdrop-blur-sm"
+																onClick={() => setShowTrailer(!showTrailer)}
+															>
+																<Play className="h-5 w-5" />
+																{showTrailer ? "Hide Trailer" : "Watch Trailer"}
+															</button>
+
+															<button
+																className="rounded-lg border border-gray-600/50 bg-gray-800/30 px-6 py-2.5 font-medium text-white transition hover:bg-gray-800/50 hover:border-gray-500/70 backdrop-blur-sm"
+																onClick={onClose}
+															>
+																Close
+															</button>
+														</>
+													)}
 												</motion.div>
+
+												{/* Trailer Section */}
+												<AnimatePresence>
+													{showTrailer && movie.trailer && (
+														<motion.div
+															initial={{ opacity: 0, height: 0 }}
+															animate={{ opacity: 1, height: "auto" }}
+															exit={{ opacity: 0, height: 0 }}
+															transition={{ duration: 0.3 }}
+															className="mt-6 overflow-hidden"
+														>
+															<div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
+																<iframe
+																	className="h-full w-full"
+																	src={`https://www.youtube.com/embed/${movie.trailer.key}?autoplay=1&rel=0`}
+																	title={movie.trailer.name || "Movie Trailer"}
+																	frameBorder="0"
+																	allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+																	allowFullScreen
+																/>
+															</div>
+														</motion.div>
+													)}
+												</AnimatePresence>
 											</div>
 										</div>
 									</div>

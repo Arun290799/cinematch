@@ -9,13 +9,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ movi
 
 	try {
 		const movieId = (await params).movieId;
-
+		const url = new URL(request.url);
+		const urlSearchParams = url.searchParams;
+		const includeTrailer = urlSearchParams.get("include_trailer") === "true";
 		if (!movieId) {
 			return NextResponse.json({ error: "Movie ID is required" }, { status: 400 });
 		}
 
 		// Make request to backend API
-		const backendUrl = `${BACKEND_URL}/api/movies/details/${movieId}`;
+		const backendUrl = `${BACKEND_URL}/api/movies/details/${movieId}?include_trailer=${includeTrailer}`;
 
 		const response = await fetch(backendUrl, {
 			method: "GET",
