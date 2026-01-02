@@ -2,7 +2,7 @@
 
 import { FC, MouseEvent, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Bookmark, Star, PlayCircle, Info } from "lucide-react";
+import { Heart, Bookmark, Star, PlayCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import MovieDetails from "./MovieDetails";
 import { useAuth } from "@/src/context/AuthContext";
@@ -127,7 +127,10 @@ const MovieCard: FC<MovieCardProps> = ({
 				className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition dark:border-gray-800 dark:bg-gray-900"
 			>
 				{/* Poster */}
-				<div className="relative aspect-[2/3] w-full overflow-hidden bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900">
+				<div
+					className="relative aspect-[2/3] w-full overflow-hidden bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 cursor-pointer"
+					onClick={handleDetails}
+				>
 					{posterUrl ? (
 						// eslint-disable-next-line @next/next/no-img-element
 						<img
@@ -143,14 +146,6 @@ const MovieCard: FC<MovieCardProps> = ({
 
 					{/* Icon overlay - only on large screens hover */}
 					<div className="hidden sm:flex absolute inset-x-0 top-3 justify-between px-3 opacity-0 pointer-events-none transition-opacity duration-300 group-hover:opacity-100 group-hover:pointer-events-auto">
-						<button
-							type="button"
-							onClick={handleDetails}
-							className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-black/60 text-white shadow-md backdrop-blur transition hover:bg-blue-500"
-							title="Details"
-						>
-							<Info className="h-4 w-4" />
-						</button>
 						<button
 							type="button"
 							onClick={handleLikeToggle}
