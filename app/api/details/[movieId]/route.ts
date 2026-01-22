@@ -12,12 +12,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ movi
 		const url = new URL(request.url);
 		const urlSearchParams = url.searchParams;
 		const includeTrailer = urlSearchParams.get("include_trailer") === "true";
+		const includeProviders = urlSearchParams.get("include_providers") === "true";
 		if (!movieId) {
 			return NextResponse.json({ error: "Movie ID is required" }, { status: 400 });
 		}
 
 		// Make request to backend API
-		const backendUrl = `${BACKEND_URL}/api/movies/details/${movieId}?include_trailer=${includeTrailer}`;
+		const backendUrl = `${BACKEND_URL}/api/movies/details/${movieId}?include_trailer=${includeTrailer}&include_providers=${includeProviders}`;
 
 		const response = await fetch(backendUrl, {
 			method: "GET",
@@ -31,7 +32,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ movi
 			const errorData = await response.json().catch(() => ({}));
 			return NextResponse.json(
 				{ error: errorData.error || "Failed to fetch movie details" },
-				{ status: response.status }
+				{ status: response.status },
 			);
 		}
 

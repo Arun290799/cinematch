@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Star, Calendar, Globe, Clock, Play, Loader2 } from "lucide-react";
+import { X, Star, Calendar, Globe, Clock, Play, Loader2, Tv, ShoppingCart, DollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getLanguageName } from "@/src/utils/common";
@@ -9,6 +9,19 @@ interface MovieDetailsProps {
 	isOpen: boolean;
 	onClose: () => void;
 	movieId: number;
+}
+
+interface Provider {
+	name: string;
+	logo?: string;
+	regions: string[];
+}
+
+interface Providers {
+	stream: Provider[];
+	rent: Provider[];
+	buy: Provider[];
+	hasAny: boolean;
 }
 
 interface MovieDetails {
@@ -31,6 +44,7 @@ interface MovieDetails {
 		site: string;
 		type: string;
 	} | null;
+	ott_providers?: Providers | null;
 }
 
 export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsProps) {
@@ -39,6 +53,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [showTrailer, setShowTrailer] = useState(false);
+
 	useEffect(() => {
 		if (!isOpen || !movieId) return;
 
@@ -46,7 +61,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 			setIsLoading(true);
 			setError(null);
 			try {
-				const response = await fetch(`/api/details/${movieId}?include_trailer=true`, {
+				const response = await fetch(`/api/details/${movieId}?include_trailer=true&include_providers=true`, {
 					credentials: "include",
 				});
 
@@ -247,6 +262,126 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														{movie.overview || "No overview available."}
 													</p>
 												</motion.div>
+
+												{/* OTT Providers */}
+												{movie.ott_providers && movie.ott_providers.hasAny && (
+													<motion.div
+														className="mt-6"
+														initial={{ opacity: 0 }}
+														animate={{ opacity: 1 }}
+														transition={{ delay: 0.5 }}
+													>
+														<h3 className="mb-4 text-lg font-semibold">Where to Watch</h3>
+
+														{/* Streaming */}
+														{movie.ott_providers.stream &&
+															movie.ott_providers.stream.length > 0 && (
+																<div className="mb-4">
+																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-green-400">
+																		<Tv className="h-4 w-4" />
+																		Streaming
+																	</div>
+																	<div className="flex flex-wrap gap-2">
+																		{movie.ott_providers.stream.map(
+																			(provider, index) => (
+																				<div
+																					key={index}
+																					className={
+																						provider.logo
+																							? "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2"
+																							: "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2"
+																					}
+																				>
+																					{provider.logo ? (
+																						<img
+																							src={provider.logo}
+																							alt={provider.name}
+																							className="h-5 w-5 rounded"
+																						/>
+																					) : null}
+																					<span className="text-sm font-medium text-green-200">
+																						{provider.name}
+																					</span>
+																				</div>
+																			),
+																		)}
+																	</div>
+																</div>
+															)}
+
+														{/* Rent */}
+														{movie.ott_providers.rent &&
+															movie.ott_providers.rent.length > 0 && (
+																<div className="mb-4">
+																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-blue-400">
+																		<ShoppingCart className="h-4 w-4" />
+																		Rent
+																	</div>
+																	<div className="flex flex-wrap gap-2">
+																		{movie.ott_providers.rent.map(
+																			(provider, index) => (
+																				<div
+																					key={index}
+																					className={
+																						provider.logo
+																							? "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2"
+																							: "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2"
+																					}
+																				>
+																					{provider.logo ? (
+																						<img
+																							src={provider.logo}
+																							alt={provider.name}
+																							className="h-5 w-5 rounded"
+																						/>
+																					) : null}
+																					<span className="text-sm font-medium text-blue-200">
+																						{provider.name}
+																					</span>
+																				</div>
+																			),
+																		)}
+																	</div>
+																</div>
+															)}
+
+														{/* Buy */}
+														{movie.ott_providers.buy &&
+															movie.ott_providers.buy.length > 0 && (
+																<div className="mb-4">
+																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-orange-400">
+																		<DollarSign className="h-4 w-4" />
+																		Buy
+																	</div>
+																	<div className="flex flex-wrap gap-2">
+																		{movie.ott_providers.buy.map(
+																			(provider, index) => (
+																				<div
+																					key={index}
+																					className={
+																						provider.logo
+																							? "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2"
+																							: "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2"
+																					}
+																				>
+																					{provider.logo ? (
+																						<img
+																							src={provider.logo}
+																							alt={provider.name}
+																							className="h-5 w-5 rounded"
+																						/>
+																					) : null}
+																					<span className="text-sm font-medium text-orange-200">
+																						{provider.name}
+																					</span>
+																				</div>
+																			),
+																		)}
+																	</div>
+																</div>
+															)}
+													</motion.div>
+												)}
 
 												{/* Additional Details */}
 												{movie.status && (

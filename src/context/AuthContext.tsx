@@ -41,7 +41,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       // Normalize possible backend shapes: { authenticated, user }, or direct user object
       const user = data?.data || ""
-      console.log("user",user)
       setUser(user ?? null);
       setIsAuthenticated(!!user);
     } catch {
