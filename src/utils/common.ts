@@ -54,3 +54,21 @@ export const genres: { id: number; name: string }[] = [
 	{ id: 10752, name: "War" },
 	{ id: 37, name: "Western" },
 ];
+export const OTT_PROVIDERS: Record<string, (query: string) => string> = {
+	Netflix: (query) => `https://www.netflix.com/search?q=${encodeURIComponent(query)}`,
+
+	"Amazon Prime Video": (query) =>
+		`https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${encodeURIComponent(query)}`,
+	"Amazon Video": (query) => `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${encodeURIComponent(query)}`,
+
+	"Disney Plus": (query) => `https://www.hotstar.com/in/search?search_query=${encodeURIComponent(query)}`,
+	JioHotstar: (query) => `https://www.hotstar.com/in/search?search_query=${encodeURIComponent(query)}`,
+
+	Hulu: (query) => `https://www.hulu.com/search?q=${encodeURIComponent(query)}`,
+
+	"Apple TV": (query) => `https://tv.apple.com/search?term=${encodeURIComponent(query)}`,
+
+	Zee5: (query) => `https://www.zee5.com/search?q=${encodeURIComponent(query)}`,
+
+	"Sony Liv": (query) => `https://www.sonyliv.com/search?q=${encodeURIComponent(query)}`,
+};

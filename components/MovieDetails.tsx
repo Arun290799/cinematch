@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Star, Calendar, Globe, Clock, Play, Loader2, Tv, ShoppingCart, DollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getLanguageName } from "@/src/utils/common";
+import { getLanguageName, OTT_PROVIDERS } from "@/src/utils/common";
 interface MovieDetailsProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -87,6 +87,16 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 		const hours = Math.floor(minutes / 60);
 		const mins = minutes % 60;
 		return `${hours}h ${mins}m`;
+	};
+	const handleRedirect = (providerName: string, movieTitle: string) => {
+		const getUrl = OTT_PROVIDERS[providerName];
+
+		if (!getUrl) {
+			return;
+		}
+
+		const url = getUrl(movieTitle);
+		window.open(url, "_blank", "noopener,noreferrer");
 	};
 
 	if (!isOpen) return null;
@@ -284,12 +294,18 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																	<div className="flex flex-wrap gap-2">
 																		{movie.ott_providers.stream.map(
 																			(provider, index) => (
-																				<div
+																				<button
 																					key={index}
+																					onClick={() =>
+																						handleRedirect(
+																							provider.name,
+																							movie.title,
+																						)
+																					}
 																					className={
 																						provider.logo
-																							? "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2"
-																							: "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2"
+																							? "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2 hover:bg-green-500/30 transition-colors cursor-pointer"
+																							: "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2 hover:bg-green-500/30 transition-colors cursor-pointer"
 																					}
 																				>
 																					{provider.logo ? (
@@ -302,7 +318,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																					<span className="text-sm font-medium text-green-200">
 																						{provider.name}
 																					</span>
-																				</div>
+																				</button>
 																			),
 																		)}
 																	</div>
@@ -320,12 +336,18 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																	<div className="flex flex-wrap gap-2">
 																		{movie.ott_providers.rent.map(
 																			(provider, index) => (
-																				<div
+																				<button
 																					key={index}
+																					onClick={() =>
+																						handleRedirect(
+																							provider.name,
+																							movie.title,
+																						)
+																					}
 																					className={
 																						provider.logo
-																							? "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2"
-																							: "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2"
+																							? "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2 hover:bg-blue-500/30 transition-colors cursor-pointer"
+																							: "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2 hover:bg-blue-500/30 transition-colors cursor-pointer"
 																					}
 																				>
 																					{provider.logo ? (
@@ -338,7 +360,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																					<span className="text-sm font-medium text-blue-200">
 																						{provider.name}
 																					</span>
-																				</div>
+																				</button>
 																			),
 																		)}
 																	</div>
@@ -356,12 +378,18 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																	<div className="flex flex-wrap gap-2">
 																		{movie.ott_providers.buy.map(
 																			(provider, index) => (
-																				<div
+																				<button
 																					key={index}
+																					onClick={() =>
+																						handleRedirect(
+																							provider.name,
+																							movie.title,
+																						)
+																					}
 																					className={
 																						provider.logo
-																							? "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2"
-																							: "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2"
+																							? "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2 hover:bg-orange-500/30 transition-colors cursor-pointer"
+																							: "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2 hover:bg-orange-500/30 transition-colors cursor-pointer"
 																					}
 																				>
 																					{provider.logo ? (
@@ -374,7 +402,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																					<span className="text-sm font-medium text-orange-200">
 																						{provider.name}
 																					</span>
-																				</div>
+																				</button>
 																			),
 																		)}
 																	</div>

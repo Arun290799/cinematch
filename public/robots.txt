@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /api/
+Disallow: /_next/
+Disallow: /.well-known/
+
+Sitemap: https://cinematch-jade.vercel.app/sitemap.xml
