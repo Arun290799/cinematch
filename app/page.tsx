@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent, useRef } from "react";
+import { useEffect, useMemo, useState, useCallback, type ChangeEvent, useRef } from "react";
 import { useAuth } from "@/src/context/AuthContext";
 import MovieCard from "@/components/MovieCard";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -24,7 +24,7 @@ export default function Home() {
 	const { isAuthenticated, isLoading } = useAuth();
 	const [movies, setMovies] = useState<Movie[]>([]);
 	const [page, setPage] = useState(1);
-	const [moviesLoading, setMoviesLoading] = useState(true);
+	const [moviesLoading, setMoviesLoading] = useState(false);
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [search, setSearch] = useState("");
@@ -181,14 +181,21 @@ export default function Home() {
 	};
 
 	// Fetch movies for current page and auth state
-	useEffect(() => {
-		let active = true;
-		const fetchMovies = async () => {
-			setMoviesLoading(true);
-			setError(null);
-			try {
-				if (!preferencesLoaded) return; // Wait for localStorage to load
+	const fetchMovies = useCallback(
+		async (isLoadMore = false) => {
+			if (!preferencesLoaded) return;
 
+			// Prevent multiple simultaneous requests
+			if (isLoadMore ? loadingMore : moviesLoading) return;
+
+			setError(null);
+			if (!isLoadMore) {
+				setMoviesLoading(true);
+			} else {
+				setLoadingMore(true);
+			}
+
+			try {
 				const params = new URLSearchParams();
 
 				if (debouncedSearchQuery.trim()) {
@@ -207,35 +214,46 @@ export default function Home() {
 
 				const endpoint = `/api/movies?${params.toString()}`;
 				const res = await fetch(endpoint, { credentials: "include" });
+
 				if (!res.ok) {
 					throw new Error("Failed to load movies");
 				}
 				const data = await res.json();
-				if (!active) return;
 
 				const newMovies: Movie[] = Array.isArray(data?.results) ? data.results : [];
 				setTotalPages(data?.total_pages && data?.total_pages > 0 ? data?.total_pages : 1);
 
-				setMovies((prevMovies) => [...prevMovies, ...newMovies]);
+				// Only append if loading more, otherwise replace
+				if (isLoadMore && page > 1) {
+					setMovies((prevMovies) => [...prevMovies, ...newMovies]);
+				} else {
+					setMovies(newMovies);
+				}
 			} catch (err) {
-				if (!active) return;
 				setError(err instanceof Error ? err.message : "Unable to load movies right now");
 				setMovies([]);
 				setTotalPages(1);
 			} finally {
-				if (active) {
-					setMoviesLoading(false);
-					setLoadingMore(false);
-				}
+				setMoviesLoading(false);
+				setLoadingMore(false);
 			}
-		};
+		},
+		[preferencesLoaded, debouncedSearchQuery, selectedLanguages, selectedGenres, page],
+	);
 
-		fetchMovies();
-
-		return () => {
-			active = false;
-		};
-	}, [isAuthenticated, page, debouncedSearchQuery, selectedLanguages, selectedGenres, preferencesLoaded]);
+	useEffect(() => {
+		// Determine if this is a load more operation or fresh fetch
+		const isLoadMore = page > 1;
+		fetchMovies(isLoadMore);
+	}, [
+		isAuthenticated,
+		page,
+		debouncedSearchQuery,
+		selectedLanguages,
+		selectedGenres,
+		preferencesLoaded,
+		fetchMovies,
+	]);
 
 	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setMovies([]);
@@ -355,8 +373,8 @@ export default function Home() {
 															(lang: string) =>
 																languages.find(
 																	(opt: { code: string; name: string }) =>
-																		opt.code === lang
-																)?.name || lang
+																		opt.code === lang,
+																)?.name || lang,
 														)
 														.join(", ")}
 										</span>
@@ -431,8 +449,9 @@ export default function Home() {
 														.map(
 															(id: number) =>
 																genres.find(
-																	(opt: { id: number; name: string }) => opt.id === id
-																)?.name || id.toString()
+																	(opt: { id: number; name: string }) =>
+																		opt.id === id,
+																)?.name || id.toString(),
 														)
 														.join(", ")}
 										</span>
@@ -527,7 +546,6 @@ export default function Home() {
 							type="button"
 							disabled={moviesLoading || loadingMore}
 							onClick={() => {
-								setLoadingMore(true);
 								setPage((p) => p + 1);
 							}}
 							className="rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-500"
