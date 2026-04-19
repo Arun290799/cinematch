@@ -66,6 +66,9 @@ export const metadata: Metadata = {
 		images: ["/logo.png"],
 		creator: "@cinematch",
 	},
+	verification: {
+		google: "koZPZMIKXDUY8Cu5pQpgjfLLFaeljTy-LFb6q5h5LPw",
+	},
 };
 
 export default async function RootLayout({
