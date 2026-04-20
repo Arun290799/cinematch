@@ -92,6 +92,10 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 		const getUrl = OTT_PROVIDERS[providerName];
 
 		if (!getUrl) {
+			// Search Google with movie title and provider when no direct URL is available
+			const searchQuery = encodeURIComponent(`${movieTitle} ${providerName}`);
+			const googleUrl = `https://www.google.com/search?q=${searchQuery}`;
+			window.open(googleUrl, "_blank", "noopener,noreferrer");
 			return;
 		}
 
@@ -141,27 +145,66 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 								<>
 									{/* Backdrop Image */}
 									<div className="relative h-64 w-full md:h-80 lg:h-96">
-										<div
-											className="absolute inset-0 bg-cover bg-center"
-											style={{
-												backgroundImage: `url(${
-													movie.backdrop_path
-														? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-														: "/default-backdrop.jpg"
-												})`,
-											}}
-										/>
-										<div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
+										{/* Background Image or Video */}
+										{showTrailer && movie.trailer ? (
+											<div className="absolute inset-0">
+												<iframe
+													className="h-full w-full"
+													src={`https://www.youtube.com/embed/${movie.trailer.key}?autoplay=1&rel=0`}
+													title={movie.trailer.name || "Movie Trailer"}
+													frameBorder="0"
+													allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+													allowFullScreen
+												/>
+											</div>
+										) : (
+											<>
+												<div
+													className="absolute inset-0 bg-cover bg-center"
+													style={{
+														backgroundImage: `url(${
+															movie.backdrop_path
+																? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+																: "/default-backdrop.jpg"
+														})`,
+													}}
+												/>
+												<div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
+											</>
+										)}
 
+										{/* Play Icon */}
+										{movie.trailer && !showTrailer && (
+											<button
+												className="absolute inset-0 flex items-center justify-center transition hover:bg-black/20"
+												onClick={() => setShowTrailer(true)}
+											>
+												<div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 transition hover:bg-white/30 hover:scale-105">
+													<Play className="h-5 w-5 text-white ml-0.5" fill="white" />
+												</div>
+											</button>
+										)}
+
+										{/* Close Button - Always Visible */}
 										<button
 											onClick={onClose}
-											className="absolute right-4 top-4 z-10 rounded-full bg-black/50 p-2 text-white transition hover:bg-black/70"
+											className="absolute right-4 top-4 z-20 rounded-full bg-black/50 p-2 text-white transition hover:bg-black/70"
 										>
 											<X className="h-5 w-5" />
 										</button>
+
+										{/* Close Video Button - Only when video is playing */}
+										{showTrailer && movie.trailer && (
+											<button
+												className="absolute right-4 top-4 z-30 rounded-full bg-black/70 p-2 text-white transition hover:bg-black/90"
+												onClick={() => setShowTrailer(false)}
+											>
+												<X className="h-5 w-5" />
+											</button>
+										)}
 									</div>
 
-									<div className="relative -mt-16 px-6 pb-8">
+									<div className={`px-6 pb-8 ${showTrailer ? "mt-8" : "relative -mt-16"}`}>
 										<div className="flex flex-col gap-6 md:flex-row">
 											{/* Movie Poster */}
 											<motion.div
@@ -423,57 +466,6 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														<p className="text-gray-300">{movie.status}</p>
 													</motion.div>
 												)}
-
-												{/* Action Buttons */}
-												<motion.div
-													className="mt-8 flex flex-wrap gap-3"
-													initial={{ opacity: 0, y: 10 }}
-													animate={{ opacity: 1, y: 0 }}
-													transition={{ delay: 0.7 }}
-												>
-													{movie.trailer && (
-														<>
-															<button
-																className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-500/90 to-red-600/90 px-6 py-2.5 font-medium text-white transition hover:from-red-600/95 hover:to-red-700/95 backdrop-blur-sm"
-																onClick={() => setShowTrailer(!showTrailer)}
-															>
-																<Play className="h-5 w-5" />
-																{showTrailer ? "Hide Trailer" : "Watch Trailer"}
-															</button>
-
-															<button
-																className="rounded-lg border border-gray-600/50 bg-gray-800/30 px-6 py-2.5 font-medium text-white transition hover:bg-gray-800/50 hover:border-gray-500/70 backdrop-blur-sm"
-																onClick={onClose}
-															>
-																Close
-															</button>
-														</>
-													)}
-												</motion.div>
-
-												{/* Trailer Section */}
-												<AnimatePresence>
-													{showTrailer && movie.trailer && (
-														<motion.div
-															initial={{ opacity: 0, height: 0 }}
-															animate={{ opacity: 1, height: "auto" }}
-															exit={{ opacity: 0, height: 0 }}
-															transition={{ duration: 0.3 }}
-															className="mt-6 overflow-hidden"
-														>
-															<div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
-																<iframe
-																	className="h-full w-full"
-																	src={`https://www.youtube.com/embed/${movie.trailer.key}?autoplay=1&rel=0`}
-																	title={movie.trailer.name || "Movie Trailer"}
-																	frameBorder="0"
-																	allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-																	allowFullScreen
-																/>
-															</div>
-														</motion.div>
-													)}
-												</AnimatePresence>
 											</div>
 										</div>
 									</div>
