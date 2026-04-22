@@ -1,9 +1,10 @@
 import { MetadataRoute } from "next";
+import { popularMovieSlugs } from "@/lib/seo/movies";
 
 export default function sitemap(): MetadataRoute.Sitemap {
 	const baseUrl = "https://cinematch-jade.vercel.app";
 
-	return [
+	const staticPages = [
 		{
 			url: baseUrl,
 			lastModified: new Date(),
@@ -23,4 +24,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			priority: 0.6,
 		},
 	];
+
+	const moviePages = popularMovieSlugs.map((slug) => ({
+		url: `${baseUrl}/movies-like/${slug}`,
+		lastModified: new Date(),
+		changeFrequency: "weekly",
+		priority: 0.8,
+	}));
+
+	return [...staticPages, ...moviePages] as MetadataRoute.Sitemap;
 }

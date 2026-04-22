@@ -154,8 +154,8 @@ const MovieCard: FC<MovieCardProps> = ({
 								isProcessing
 									? "bg-gray-400 cursor-wait"
 									: liked
-									? "bg-red-500 hover:bg-red-600"
-									: "bg-black/60 hover:bg-black/70"
+										? "bg-red-500 hover:bg-red-600"
+										: "bg-black/60 hover:bg-black/70"
 							}`}
 							title={liked ? "Liked" : "Like"}
 						>
@@ -197,8 +197,8 @@ const MovieCard: FC<MovieCardProps> = ({
 								isProcessing
 									? "bg-gray-100 text-gray-400 cursor-wait"
 									: liked
-									? "bg-red-50 text-red-600 hover:bg-red-100"
-									: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+										? "bg-red-50 text-red-600 hover:bg-red-100"
+										: "bg-gray-100 text-gray-600 hover:bg-gray-200"
 							}`}
 							title={liked ? "Liked" : "Like"}
 						>

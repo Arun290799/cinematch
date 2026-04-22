@@ -55,10 +55,10 @@ const WatchlistPage = () => {
 				const items = Array.isArray(data?.results)
 					? data.results
 					: Array.isArray(data?.data?.items)
-					? data.data.items
-					: Array.isArray(data)
-					? data
-					: [];
+						? data.data.items
+						: Array.isArray(data)
+							? data
+							: [];
 
 				const mapped = items.map((movie: any) => ({
 					id: movie.movieId ?? movie.id,

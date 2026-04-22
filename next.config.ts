@@ -4,6 +4,18 @@ const nextConfig: NextConfig = {
 	// Enable strict mode for better performance and error handling
 	reactStrictMode: true,
 
+	// Image domains
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "image.tmdb.org",
+				port: "",
+				pathname: "/t/p/**",
+			},
+		],
+	},
+
 	// Security headers
 	async headers() {
 		return [
