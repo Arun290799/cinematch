@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import MovieGrid from "@/components/MovieGrid";
 import { popularMovieSlugs } from "@/lib/seo/movies";
+import { getLanguageName } from "@/src/utils/common";
 
 interface Movie {
 	id: number;
@@ -23,6 +24,9 @@ interface MoviesLikeResponse {
 		overview: string;
 		poster_path?: string | null;
 		year?: number | string | null;
+		rating?: number | null;
+		genres?: string[];
+		language?: string | null;
 	};
 	similarMovies: Movie[];
 }
@@ -144,24 +148,43 @@ export default async function MoviesLikePage({ params }: { params: { slug: strin
 						<div className="flex-1">
 							<div className="mb-6">
 								<h2 className="text-2xl font-semibold text-foreground mb-3">{baseMovie.title}</h2>
-								{baseMovie.year && (
-									<p className="text-sm text-muted-foreground mb-4">Released: {baseMovie.year}</p>
-								)}
-								<p className="text-base text-muted-foreground leading-relaxed">{baseMovie.overview}</p>
-							</div>
 
-							{/* SEO-optimized intro paragraph */}
-							<div className="rounded-xl bg-card/50 border border-border p-6 backdrop-blur-sm">
-								<p className="text-base text-muted-foreground leading-relaxed">
-									Discover an amazing collection of movies similar to{" "}
-									<strong className="text-foreground">{baseMovie.title}</strong>. Our AI-powered
-									recommendation engine analyzes themes, genres, directors, and storytelling styles to
-									find films that share the same cinematic magic. Whether you loved the action
-									sequences, the emotional depth, or the visual storytelling of {baseMovie.title},
-									you'll find comparable titles that will keep you entertained. Explore our curated
-									list of similar movies and expand your watchlist with handpicked recommendations
-									that match your taste.
-								</p>
+								{/* Movie Details */}
+								<div className="flex flex-wrap items-center gap-3 mb-4">
+									{baseMovie.year && (
+										<span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-sm font-medium text-accent">
+											{baseMovie.year}
+										</span>
+									)}
+									{baseMovie.rating && (
+										<span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/10 px-3 py-1 text-sm font-medium text-yellow-500">
+											<svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+												<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+											</svg>
+											{baseMovie.rating.toFixed(1)}
+										</span>
+									)}
+									{baseMovie.language && (
+										<span className="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-500">
+											{getLanguageName(baseMovie.language)}
+										</span>
+									)}
+								</div>
+
+								{baseMovie.genres && baseMovie.genres.length > 0 && (
+									<div className="flex flex-wrap gap-2 mb-4">
+										{baseMovie.genres.map((genre) => (
+											<span
+												key={genre}
+												className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
+											>
+												{genre}
+											</span>
+										))}
+									</div>
+								)}
+
+								<p className="text-base text-muted-foreground leading-relaxed">{baseMovie.overview}</p>
 							</div>
 						</div>
 					</div>

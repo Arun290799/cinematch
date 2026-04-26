@@ -8,6 +8,7 @@ import { ChevronDown, X, Heart } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import Link from "next/link";
 import { languages, genres } from "@/src/utils/common";
+import { popularMovieSlugs } from "@/lib/seo/movies";
 
 type Movie = {
 	id: number;
@@ -39,6 +40,8 @@ export default function Home() {
 	const [totalPages, setTotalPages] = useState(1);
 	const debouncedSearchQuery = useDebounce(search, 500);
 	const [preferencesLoaded, setPreferencesLoaded] = useState(false);
+	const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+	const [randomSlugs, setRandomSlugs] = useState<string[]>([]);
 
 	// Load saved preferences from localStorage on mount
 	useEffect(() => {
@@ -64,6 +67,28 @@ export default function Home() {
 		} finally {
 			setPreferencesLoaded(true);
 		}
+	}, []);
+
+	// Fetch first 3 popular movies from API and set random slugs
+	useEffect(() => {
+		const fetchPopularMovies = async () => {
+			try {
+				const res = await fetch("/api/movies?page=1", { credentials: "include" });
+				if (res.ok) {
+					const data = await res.json();
+					const items = Array.isArray(data?.results) ? data.results : [];
+					setPopularMovies(items.slice(0, 3));
+				}
+			} catch (error) {
+				console.error("Error fetching popular movies:", error);
+			}
+		};
+
+		fetchPopularMovies();
+
+		// Get 2 random slugs from popularMovieSlugs
+		const shuffled = [...popularMovieSlugs].sort(() => 0.5 - Math.random());
+		setRandomSlugs(shuffled.slice(0, 2));
 	}, []);
 
 	useEffect(() => {
@@ -553,6 +578,51 @@ export default function Home() {
 							{loadingMore || moviesLoading ? "Loading..." : "Next"}
 						</button>
 					)}
+				</div>
+
+				{/* Movies Like Section */}
+				<div className="mt-12 rounded-xl bg-gray-50 border border-gray-200 p-8 dark:bg-gray-900 dark:border-gray-800">
+					<h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Explore Movies Like</h3>
+					<div className="flex flex-wrap gap-4">
+						{popularMovies.map((movie) => (
+							<Link
+								key={movie.id}
+								href={`/movies-like/${movie.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+								className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							>
+								<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+									/>
+								</svg>
+								Movies Like {movie.title}
+							</Link>
+						))}
+						{randomSlugs.map((slug) => (
+							<Link
+								key={slug}
+								href={`/movies-like/${slug}`}
+								className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+							>
+								<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+									/>
+								</svg>
+								Movies Like{" "}
+								{slug
+									.split("-")
+									.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+									.join(" ")}
+							</Link>
+						))}
+					</div>
 				</div>
 			</section>
 			<ScrollToTop />
