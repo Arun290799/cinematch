@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { FC, useState, useEffect } from "react";
-import { Heart, Menu, X, Mail } from "lucide-react";
+import { Heart, Menu, X, Mail, Film } from "lucide-react";
 import LogoutButton from "./LogoutButton";
 import { useAuth } from "@/src/context/AuthContext";
 import { useWishlist } from "@/src/context/WishlistContext";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -63,18 +62,15 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 					<div className="flex h-16 items-center justify-between">
 						{/* Logo */}
 						<div className="flex-shrink-0">
-							<Link href="/" className="flex items-center space-x-2">
-								<Image
-									src="/logo.png"
-									alt="CineMatch Logo"
-									width={150}
-									height={38}
-									className="rounded-lg"
-									style={{ objectFit: "contain" }}
-								/>
-								{/* <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-									CineMatch
-								</span> */}
+							<Link href="/" className="flex items-center space-x-3">
+								<div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 shadow-lg shadow-purple-500/25">
+									<Film className="w-5 h-5 text-white" />
+								</div>
+								<div className="relative">
+									<span className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent tracking-tight">
+										CineMatch
+									</span>
+								</div>
 							</Link>
 						</div>
 
