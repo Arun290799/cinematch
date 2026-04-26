@@ -52,13 +52,13 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, [isMobileMenuOpen]);
 
-	const navLinkClass = "relative px-3 py-2 text-sm font-medium transition-colors duration-200 hover:text-indigo-600";
+	const navLinkClass = "relative px-3 py-2 text-sm font-medium transition-colors duration-200 hover:text-accent";
 	const mobileNavLinkClass =
-		"block w-full px-4 py-3 text-base font-medium transition-colors duration-200 hover:bg-gray-50";
+		"block w-full px-4 py-3 text-base font-medium transition-colors duration-200 hover:bg-muted";
 
 	return (
 		<>
-			<header className={`fixed w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-sm`}>
+			<header className={`fixed w-full z-50 transition-all duration-300 bg-card/80 backdrop-blur-sm`}>
 				<nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 					<div className="flex h-16 items-center justify-between">
 						{/* Logo */}
@@ -85,7 +85,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									<Link
 										href="/wishlist"
 										className={`${navLinkClass} ${
-											pathname === "/wishlist" ? "text-indigo-600" : "text-gray-700"
+											pathname === "/wishlist" ? "text-accent" : "text-foreground"
 										} flex items-center gap-1`}
 									>
 										<span>Watchlist</span>
@@ -93,7 +93,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 											<motion.span
 												initial={{ scale: 0.8, opacity: 0 }}
 												animate={{ scale: 1, opacity: 1 }}
-												className="flex items-center justify-center h-5 min-w-5 px-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800"
+												className="flex items-center justify-center h-5 min-w-5 px-1 text-xs font-medium rounded-full bg-accent/20 text-accent"
 											>
 												{wishlistIds.length > 9 ? "9+" : wishlistIds.length}
 											</motion.span>
@@ -102,7 +102,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									<Link
 										href="/liked-movies"
 										className={`${navLinkClass} ${
-											pathname === "/liked-movies" ? "text-indigo-600" : "text-gray-700"
+											pathname === "/liked-movies" ? "text-accent" : "text-foreground"
 										}`}
 									>
 										Liked Movies
@@ -110,7 +110,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									<Link
 										href="/recommendations"
 										className={`${navLinkClass} ${
-											pathname === "/recommendations" ? "text-indigo-600" : "text-gray-700"
+											pathname === "/recommendations" ? "text-accent" : "text-foreground"
 										}`}
 									>
 										Recommendations
@@ -118,7 +118,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									<Link
 										href="/contact"
 										className={`${navLinkClass} ${
-											pathname === "/contact" ? "text-indigo-600" : "text-gray-700"
+											pathname === "/contact" ? "text-accent" : "text-foreground"
 										}`}
 									>
 										Contact
@@ -132,20 +132,20 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									<Link
 										href="/contact"
 										className={`${navLinkClass} ${
-											pathname === "/contact" ? "text-indigo-600" : "text-gray-700"
+											pathname === "/contact" ? "text-accent" : "text-foreground"
 										}`}
 									>
 										Contact
 									</Link>
 									<Link
 										href="/login"
-										className="rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+										className="rounded-lg bg-gradient-to-r from-accent to-accent-hover px-4 py-2 text-sm font-medium text-accent-foreground shadow-sm hover:from-accent-hover hover:to-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-all duration-200"
 									>
 										Sign in
 									</Link>
 									<Link
 										href="/signup"
-										className="ml-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+										className="ml-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-all duration-200"
 									>
 										Sign up
 									</Link>
@@ -157,7 +157,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 						<div className="flex md:hidden">
 							<button
 								onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-								className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+								className="inline-flex items-center justify-center p-2 rounded-md text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent"
 							>
 								<span className="sr-only">Open main menu</span>
 								{isMobileMenuOpen ? (
@@ -178,7 +178,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 							animate={{ opacity: 1, height: "auto" }}
 							exit={{ opacity: 0, height: 0 }}
 							transition={{ duration: 0.3 }}
-							className="md:hidden bg-white border-t border-gray-200"
+							className="md:hidden bg-card border-t border-border"
 						>
 							<div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
 								{showAuthed ? (
@@ -186,7 +186,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										<Link
 											href="/"
 											className={`${mobileNavLinkClass} ${
-												pathname === "/" ? "text-indigo-600" : "text-gray-700"
+												pathname === "/" ? "text-accent" : "text-foreground"
 											}`}
 										>
 											Home
@@ -194,12 +194,12 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										<Link
 											href="/wishlist"
 											className={`${mobileNavLinkClass} ${
-												pathname === "/wishlist" ? "text-indigo-600" : "text-gray-700"
+												pathname === "/wishlist" ? "text-accent" : "text-foreground"
 											} flex items-center justify-between`}
 										>
 											<span>Watchlist</span>
 											{wishlistIds.length > 0 && (
-												<span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+												<span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent/20 text-accent">
 													{wishlistIds.length > 9 ? "9+" : wishlistIds.length}
 												</span>
 											)}
@@ -207,7 +207,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										<Link
 											href="/liked-movies"
 											className={`${mobileNavLinkClass} ${
-												pathname === "/liked-movies" ? "text-indigo-600" : "text-gray-700"
+												pathname === "/liked-movies" ? "text-accent" : "text-foreground"
 											}`}
 										>
 											Liked Movies
@@ -215,7 +215,7 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										<Link
 											href="/recommendations"
 											className={`${mobileNavLinkClass} ${
-												pathname === "/recommendations" ? "text-indigo-600" : "text-gray-700"
+												pathname === "/recommendations" ? "text-accent" : "text-foreground"
 											}`}
 										>
 											Recommendations
@@ -223,12 +223,12 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										<Link
 											href="/contact"
 											className={`${mobileNavLinkClass} ${
-												pathname === "/contact" ? "text-indigo-600" : "text-gray-700"
+												pathname === "/contact" ? "text-accent" : "text-foreground"
 											}`}
 										>
 											Contact
 										</Link>
-										<div className="pt-2 border-t border-gray-200">
+										<div className="pt-2 border-t border-border">
 											<LogoutButton initialAuthed={showAuthed} />
 										</div>
 									</>
@@ -237,20 +237,20 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										<Link
 											href="/contact"
 											className={`${mobileNavLinkClass} ${
-												pathname === "/contact" ? "text-indigo-600" : "text-gray-700"
+												pathname === "/contact" ? "text-accent" : "text-foreground"
 											}`}
 										>
 											Contact
 										</Link>
 										<Link
 											href="/login"
-											className="block w-full px-4 py-3 text-base font-medium text-center text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-md hover:from-indigo-700 hover:to-purple-700 transition-colors duration-200"
+											className="block w-full px-4 py-3 text-base font-medium text-center text-accent-foreground bg-gradient-to-r from-accent to-accent-hover rounded-md hover:from-accent-hover hover:to-accent transition-colors duration-200"
 										>
 											Sign in
 										</Link>
 										<Link
 											href="/signup"
-											className="block w-full px-4 py-3 mt-2 text-base font-medium text-center text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200"
+											className="block w-full px-4 py-3 mt-2 text-base font-medium text-center text-foreground bg-card border border-border rounded-md hover:bg-muted transition-colors duration-200"
 										>
 											Sign up
 										</Link>

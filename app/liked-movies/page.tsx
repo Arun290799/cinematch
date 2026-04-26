@@ -120,8 +120,8 @@ const LikedMoviesPage = () => {
 		return (
 			<div className="flex min-h-screen items-center justify-center">
 				<div className="flex flex-col items-center gap-3">
-					<Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-					<p className="text-sm text-gray-600 dark:text-gray-400">Loading your liked movies...</p>
+					<Loader2 className="h-8 w-8 animate-spin text-accent" />
+					<p className="text-sm text-muted-foreground">Loading your liked movies...</p>
 				</div>
 			</div>
 		);
@@ -134,8 +134,8 @@ const LikedMoviesPage = () => {
 				<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
 					<div className="mb-4 flex items-center justify-between">
 						<div className="flex items-center gap-3">
-							<h1 className="text-3xl font-bold text-gray-900 dark:text-white">Liked Movies</h1>
-							<Heart className="h-6 w-6 text-red-500" />
+							<h1 className="text-3xl font-bold text-foreground">Liked Movies</h1>
+							<Heart className="h-6 w-6 text-destructive" />
 						</div>
 						{likedMovies.length > 0 && (
 							<motion.button
@@ -143,7 +143,7 @@ const LikedMoviesPage = () => {
 								whileTap={{ scale: 0.98 }}
 								disabled={isDeletingAll}
 								onClick={handleDeleteAll}
-								className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50"
+								className="flex items-center gap-2 rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition hover:bg-destructive-hover disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50"
 							>
 								{isDeletingAll ? (
 									<>
@@ -159,7 +159,7 @@ const LikedMoviesPage = () => {
 							</motion.button>
 						)}
 					</div>
-					<p className="text-gray-600 dark:text-gray-400">
+					<p className="text-muted-foreground">
 						{likedMovies.length === 0
 							? "Start liking movies to see them here."
 							: `${likedMovies.length} ${likedMovies.length === 1 ? "movie" : "movies"} liked`}
@@ -168,7 +168,7 @@ const LikedMoviesPage = () => {
 
 				{/* Error */}
 				{error && (
-					<div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200">
+					<div className="mb-4 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
 						{error}
 					</div>
 				)}
@@ -178,20 +178,18 @@ const LikedMoviesPage = () => {
 					<motion.div
 						initial={{ opacity: 0, scale: 0.95 }}
 						animate={{ opacity: 1, scale: 1 }}
-						className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white p-12 dark:border-gray-700 dark:bg-gray-900"
+						className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-card p-12"
 					>
-						<div className="mb-4 rounded-full bg-gray-100 p-6 dark:bg-gray-800">
-							<Film className="h-12 w-12 text-gray-400" />
+						<div className="mb-4 rounded-full bg-muted p-6">
+							<Film className="h-12 w-12 text-muted-foreground" />
 						</div>
-						<h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-							You haven't liked any movies yet
-						</h2>
-						<p className="mb-6 max-w-sm text-center text-gray-600 dark:text-gray-400">
+						<h2 className="mb-2 text-xl font-semibold text-foreground">You haven't liked any movies yet</h2>
+						<p className="mb-6 max-w-sm text-center text-muted-foreground">
 							Browse movies and tap the heart icon to like them. Your favorites will show up here.
 						</p>
 						<button
 							onClick={() => router.push("/")}
-							className="rounded-lg bg-blue-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600"
+							className="rounded-lg bg-accent px-6 py-2.5 text-sm font-medium text-accent-foreground transition hover:bg-accent-hover"
 						>
 							Discover Movies
 						</button>
@@ -219,7 +217,7 @@ const LikedMoviesPage = () => {
 
 						{/* Pagination */}
 						<div className="mt-6 flex items-center justify-start sm:justify-end gap-3">
-							<span className="text-xs text-gray-500 dark:text-gray-400">
+							<span className="text-xs text-muted-foreground">
 								Page {page} of {totalPages}
 							</span>
 							{page < totalPages && (
@@ -227,7 +225,7 @@ const LikedMoviesPage = () => {
 									type="button"
 									disabled={loadingMore}
 									onClick={() => setPage((p) => p + 1)}
-									className="rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-500"
+									className="rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-muted"
 								>
 									{loadingMore ? "Loading..." : "Next"}
 								</button>

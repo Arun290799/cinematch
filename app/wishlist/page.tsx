@@ -98,8 +98,8 @@ const WatchlistPage = () => {
 		return (
 			<div className="flex min-h-screen items-center justify-center">
 				<div className="flex flex-col items-center gap-3">
-					<Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-					<p className="text-sm text-gray-600 dark:text-gray-400">Loading your watchlist...</p>
+					<Loader2 className="h-8 w-8 animate-spin text-accent" />
+					<p className="text-sm text-muted-foreground">Loading your watchlist...</p>
 				</div>
 			</div>
 		);
@@ -111,9 +111,9 @@ const WatchlistPage = () => {
 				{/* Header */}
 				<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
 					<div className="flex items-center gap-3 mb-2">
-						<h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Watchlist</h1>
+						<h1 className="text-3xl font-bold text-foreground">My Watchlist</h1>
 					</div>
-					<p className="text-gray-600 dark:text-gray-400">
+					<p className="text-muted-foreground">
 						{movies.length === 0
 							? "Start building your collection"
 							: `${movies.length} ${movies.length === 1 ? "movie" : "movies"} saved`}
@@ -125,20 +125,18 @@ const WatchlistPage = () => {
 					<motion.div
 						initial={{ opacity: 0, scale: 0.95 }}
 						animate={{ opacity: 1, scale: 1 }}
-						className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white p-12 dark:border-gray-700 dark:bg-gray-900"
+						className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-card p-12"
 					>
-						<div className="mb-4 rounded-full bg-gray-100 p-6 dark:bg-gray-800">
-							<Film className="h-12 w-12 text-gray-400" />
+						<div className="mb-4 rounded-full bg-muted p-6">
+							<Film className="h-12 w-12 text-muted-foreground" />
 						</div>
-						<h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-							Your watchlist is empty
-						</h2>
-						<p className="mb-6 max-w-sm text-center text-gray-600 dark:text-gray-400">
+						<h2 className="mb-2 text-xl font-semibold text-foreground">Your watchlist is empty</h2>
+						<p className="mb-6 max-w-sm text-center text-muted-foreground">
 							Explore movies and add them to your watchlist to keep track of what you want to watch
 						</p>
 						<button
 							onClick={() => router.push("/")}
-							className="rounded-lg bg-blue-500 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-blue-600"
+							className="rounded-lg bg-accent px-6 py-2.5 text-sm font-medium text-accent-foreground transition hover:bg-accent-hover"
 						>
 							Discover Movies
 						</button>
@@ -167,11 +165,9 @@ const WatchlistPage = () => {
 							))
 						) : (
 							<div className="col-span-full text-center py-12">
-								<Film className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-								<h3 className="text-lg font-medium text-gray-900 dark:text-white">
-									No movies in your watchlist
-								</h3>
-								<p className="mt-1 text-gray-500 dark:text-gray-400">Add some movies to get started!</p>
+								<Film className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+								<h3 className="text-lg font-medium text-foreground">No movies in your watchlist</h3>
+								<p className="mt-1 text-muted-foreground">Add some movies to get started!</p>
 							</div>
 						)}
 					</motion.div>
@@ -180,7 +176,7 @@ const WatchlistPage = () => {
 				{/* Pagination */}
 				{movies.length > 0 && (
 					<div className="mt-6 flex items-center justify-start sm:justify-end gap-3">
-						<span className="text-xs text-gray-500 dark:text-gray-400">
+						<span className="text-xs text-muted-foreground">
 							Page {page} of {totalPages}
 						</span>
 						{page < totalPages && (
@@ -188,7 +184,7 @@ const WatchlistPage = () => {
 								type="button"
 								disabled={loadingMore}
 								onClick={() => setPage((p) => p + 1)}
-								className="rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-500"
+								className="rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-muted"
 							>
 								{loadingMore ? "Loading..." : "Next"}
 							</button>

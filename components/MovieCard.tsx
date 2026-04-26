@@ -124,11 +124,11 @@ const MovieCard: FC<MovieCardProps> = ({
 				animate="visible"
 				variants={cardVariants}
 				whileHover={{ scale: 1.03 }}
-				className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition dark:border-gray-800 dark:bg-gray-900"
+				className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition"
 			>
 				{/* Poster */}
 				<div
-					className="relative aspect-[2/3] w-full overflow-hidden bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 cursor-pointer"
+					className="relative aspect-[2/3] w-full overflow-hidden bg-gradient-to-br from-muted via-muted to-background cursor-pointer"
 					onClick={handleDetails}
 				>
 					{posterUrl ? (
@@ -139,7 +139,7 @@ const MovieCard: FC<MovieCardProps> = ({
 							className="h-full w-full object-cover transition duration-300 group-hover:scale-105 group-hover:opacity-90"
 						/>
 					) : (
-						<div className="flex h-full w-full items-center justify-center text-gray-400">
+						<div className="flex h-full w-full items-center justify-center text-muted-foreground">
 							<PlayCircle className="h-12 w-12 opacity-70" />
 						</div>
 					)}
@@ -152,15 +152,15 @@ const MovieCard: FC<MovieCardProps> = ({
 							disabled={isProcessing}
 							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white shadow-md backdrop-blur transition ${
 								isProcessing
-									? "bg-gray-400 cursor-wait"
+									? "bg-muted text-muted-foreground cursor-wait"
 									: liked
-										? "bg-red-500 hover:bg-red-600"
-										: "bg-black/60 hover:bg-black/70"
+										? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+										: "bg-muted text-muted-foreground hover:bg-accent/20"
 							}`}
 							title={liked ? "Liked" : "Like"}
 						>
 							{isProcessing ? (
-								<span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+								<span className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
 							) : (
 								<Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
 							)}
@@ -169,7 +169,9 @@ const MovieCard: FC<MovieCardProps> = ({
 							type="button"
 							onClick={handleWishlistToggle}
 							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white shadow-md backdrop-blur transition ${
-								inWishlist ? "bg-emerald-500 hover:bg-emerald-600" : "bg-black/60 hover:bg-emerald-500"
+								inWishlist
+									? "bg-accent/10 text-accent hover:bg-accent/20"
+									: "bg-muted text-muted-foreground hover:bg-accent/20"
 							}`}
 							title={inWishlist ? "In Watchlist" : "Watchlist"}
 						>
@@ -181,10 +183,8 @@ const MovieCard: FC<MovieCardProps> = ({
 				{/* Content */}
 				<div className="flex flex-1 flex-col gap-3 p-4">
 					<div className="space-y-1 cursor-pointer" onClick={handleDetails}>
-						<h2 className="line-clamp-2 text-base font-semibold text-gray-900 dark:text-gray-50">
-							{title}
-						</h2>
-						<p className="line-clamp-2 text-xs text-gray-500 dark:text-gray-400">{overview}</p>
+						<h2 className="line-clamp-2 text-base font-semibold text-foreground">{title}</h2>
+						<p className="line-clamp-2 text-xs text-muted-foreground">{overview}</p>
 					</div>
 
 					{/* Action buttons - only on small screens */}
@@ -195,10 +195,10 @@ const MovieCard: FC<MovieCardProps> = ({
 							disabled={isProcessing}
 							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm transition ${
 								isProcessing
-									? "bg-gray-100 text-gray-400 cursor-wait"
+									? "bg-muted text-muted-foreground cursor-wait"
 									: liked
-										? "bg-red-50 text-red-600 hover:bg-red-100"
-										: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+										? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+										: "bg-muted text-muted-foreground hover:bg-accent/20"
 							}`}
 							title={liked ? "Liked" : "Like"}
 						>
@@ -213,8 +213,8 @@ const MovieCard: FC<MovieCardProps> = ({
 							onClick={handleWishlistToggle}
 							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm transition ${
 								inWishlist
-									? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-									: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+									? "bg-accent/10 text-accent hover:bg-accent/20"
+									: "bg-muted text-muted-foreground hover:bg-accent/20"
 							}`}
 							title={inWishlist ? "In Watchlist" : "Watchlist"}
 						>
@@ -224,20 +224,20 @@ const MovieCard: FC<MovieCardProps> = ({
 
 					<div className="flex flex-wrap items-center gap-2 text-xs hidden">
 						{typeof rating === "number" && (
-							<span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/10 px-2 py-0.5 text-[11px] font-medium text-yellow-500">
-								<Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+							<span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
+								<Star className="h-3 w-3 fill-accent text-accent" />
 								<span>{rating.toFixed(1)}</span>
 							</span>
 						)}
 						{year && (
-							<span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+							<span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-foreground">
 								{year}
 							</span>
 						)}
 						{genres.slice(0, 3).map((genre) => (
 							<span
 								key={genre}
-								className="rounded-full bg-gray-900/5 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:bg-gray-700/70 dark:text-gray-200"
+								className="rounded-full bg-muted/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
 							>
 								{genre}
 							</span>

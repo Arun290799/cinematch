@@ -162,8 +162,8 @@ export default function ContactPage() {
 					transition={{ duration: 0.5 }}
 					className="text-center mb-12"
 				>
-					<h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Contact Us</h1>
-					<p className="text-lg text-gray-600 dark:text-gray-400">
+					<h1 className="text-4xl font-bold text-foreground mb-4">Contact Us</h1>
+					<p className="text-lg text-muted-foreground">
 						Have questions or feedback? We'd love to hear from you.
 					</p>
 				</motion.div>
@@ -172,15 +172,12 @@ export default function ContactPage() {
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5, delay: 0.1 }}
-					className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8"
+					className="bg-card rounded-2xl shadow-xl p-8"
 				>
 					<form onSubmit={handleSubmit} className="space-y-6">
 						{/* Name Field */}
 						<div>
-							<label
-								htmlFor="name"
-								className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-							>
+							<label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
 								<div className="flex items-center gap-2">
 									<User className="w-4 h-4" />
 									Name
@@ -192,25 +189,18 @@ export default function ContactPage() {
 								name="name"
 								value={formData.name}
 								onChange={handleInputChange}
-								className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all duration-200 ${
-									errors.name
-										? "border-red-500"
-										: "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+								className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200 ${
+									errors.name ? "border-destructive" : "border-border bg-input text-foreground"
 								}`}
 								placeholder="Your full name"
 								disabled={isSubmitting}
 							/>
-							{errors.name && (
-								<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
-							)}
+							{errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
 						</div>
 
 						{/* Email Field */}
 						<div>
-							<label
-								htmlFor="email"
-								className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-							>
+							<label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
 								<div className="flex items-center gap-2">
 									<Mail className="w-4 h-4" />
 									Email
@@ -222,25 +212,18 @@ export default function ContactPage() {
 								name="email"
 								value={formData.email}
 								onChange={handleInputChange}
-								className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all duration-200 ${
-									errors.email
-										? "border-red-500"
-										: "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+								className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200 ${
+									errors.email ? "border-destructive" : "border-border bg-input text-foreground"
 								}`}
 								placeholder="your.email@example.com"
 								disabled={isSubmitting}
 							/>
-							{errors.email && (
-								<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
-							)}
+							{errors.email && <p className="mt-1 text-sm text-destructive">{errors.email}</p>}
 						</div>
 
 						{/* Message Field */}
 						<div>
-							<label
-								htmlFor="message"
-								className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-							>
+							<label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
 								<div className="flex items-center gap-2">
 									<MessageSquare className="w-4 h-4" />
 									Message
@@ -252,17 +235,13 @@ export default function ContactPage() {
 								value={formData.message}
 								onChange={handleInputChange}
 								rows={6}
-								className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all duration-200 resize-none ${
-									errors.message
-										? "border-red-500"
-										: "border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+								className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-accent focus:border-accent transition-all duration-200 resize-none ${
+									errors.message ? "border-destructive" : "border-border bg-input text-foreground"
 								}`}
 								placeholder="Tell us what's on your mind..."
 								disabled={isSubmitting}
 							/>
-							{errors.message && (
-								<p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.message}</p>
-							)}
+							{errors.message && <p className="mt-1 text-sm text-destructive">{errors.message}</p>}
 						</div>
 
 						{/* Submit Button */}
@@ -270,7 +249,7 @@ export default function ContactPage() {
 							<button
 								type="submit"
 								disabled={isSubmitting}
-								className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl shadow-sm hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+								className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-accent to-accent-hover text-accent-foreground font-medium rounded-xl shadow-sm hover:from-accent-hover hover:to-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								{isSubmitting ? (
 									<>
@@ -291,9 +270,9 @@ export default function ContactPage() {
 							<motion.div
 								initial={{ opacity: 0, y: 10 }}
 								animate={{ opacity: 1, y: 0 }}
-								className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl"
+								className="p-4 bg-accent/10 border border-accent/20 rounded-xl"
 							>
-								<p className="text-green-800 dark:text-green-200 text-center">
+								<p className="text-accent text-center">
 									Thank you for your message! We'll get back to you soon.
 								</p>
 							</motion.div>
@@ -303,9 +282,9 @@ export default function ContactPage() {
 							<motion.div
 								initial={{ opacity: 0, y: 10 }}
 								animate={{ opacity: 1, y: 0 }}
-								className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
+								className="p-4 bg-destructive/10 border border-destructive/20 rounded-xl"
 							>
-								<p className="text-red-800 dark:text-red-200 text-center">
+								<p className="text-destructive text-center">
 									Something went wrong. Please try again later.
 								</p>
 							</motion.div>

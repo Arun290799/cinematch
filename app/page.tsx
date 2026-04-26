@@ -292,13 +292,13 @@ export default function Home() {
 		Array.from({ length: count }).map((_, i) => (
 			<div
 				key={i}
-				className="flex animate-pulse flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+				className="flex animate-pulse flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
 			>
-				<div className="aspect-[2/3] w-full bg-gray-200 dark:bg-gray-800" />
+				<div className="aspect-[2/3] w-full bg-muted" />
 				<div className="space-y-3 p-4">
-					<div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-800" />
-					<div className="h-3 w-full rounded bg-gray-200 dark:bg-gray-800" />
-					<div className="h-3 w-5/6 rounded bg-gray-200 dark:bg-gray-800" />
+					<div className="h-4 w-3/4 rounded bg-muted" />
+					<div className="h-3 w-full rounded bg-muted" />
+					<div className="h-3 w-5/6 rounded bg-muted" />
 				</div>
 			</div>
 		));
@@ -316,18 +316,18 @@ export default function Home() {
 						</div>
 					)}
 					{isAuthenticated && (
-						<div className="rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 backdrop-blur-sm dark:from-blue-950/30 dark:to-indigo-950/30 dark:border-blue-800">
+						<div className="rounded-xl bg-gradient-to-r from-accent/10 to-accent/20 border border-accent/30 p-4 backdrop-blur-sm">
 							<div className="flex items-start gap-3">
-								<Heart className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+								<Heart className="h-5 w-5 text-accent mt-0.5 shrink-0" />
 								<div className="space-y-2">
-									<p className="text-sm text-blue-900 dark:text-blue-100">
+									<p className="text-sm text-foreground">
 										<strong>Get Better Recommendations:</strong> Like your favorite movies to help
 										us understand your preferences and provide personalized recommendations just for
 										you.
 									</p>
 									<Link
 										href="/recommendations"
-										className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-800 hover:text-blue-900 dark:text-blue-200 dark:hover:text-blue-100 transition-colors duration-200"
+										className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-hover transition-colors duration-200"
 									>
 										View Your Recommendations
 										<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -380,7 +380,7 @@ export default function Home() {
 							<div className="flex items-center gap-2">
 								<label
 									htmlFor="languages"
-									className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap"
+									className="text-sm font-medium text-foreground whitespace-nowrap"
 								>
 									Languages
 								</label>
@@ -388,7 +388,7 @@ export default function Home() {
 									<button
 										type="button"
 										onClick={handleLanguageDropdown}
-										className="flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-left text-sm text-gray-700 shadow-sm transition-all duration-200 hover:border-gray-900 focus:border-gray-900 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-gray-600 min-w-48"
+										className="flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border border-border bg-input px-4 py-2.5 text-left text-sm text-foreground shadow-sm transition-all duration-200 hover:border-accent focus:border-accent focus:outline-none min-w-48"
 									>
 										<span className="truncate">
 											{selectedLanguages.length === 0
@@ -404,45 +404,45 @@ export default function Home() {
 														.join(", ")}
 										</span>
 										<ChevronDown
-											className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+											className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
 												isLanguageDropdownOpen ? "rotate-180" : ""
 											}`}
 										/>
 									</button>
 
 									{isLanguageDropdownOpen && (
-										<div className="absolute right-0 z-50 mt-2 w-full rounded-xl border border-gray-300 bg-white shadow-xl backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900 min-w-48 sm:w-56">
+										<div className="absolute right-0 z-50 mt-2 w-full rounded-xl border border-border bg-card shadow-xl backdrop-blur-sm min-w-48 sm:w-56">
 											<div className="max-h-60 overflow-y-auto p-2">
 												{languages.map((option: { code: string; name: string }) => (
 													<div
 														key={option.code}
-														className="flex items-center rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-150 dark:text-gray-100 dark:hover:bg-gray-800"
+														className="flex items-center rounded-lg px-3 py-2.5 text-sm text-foreground hover:bg-muted cursor-pointer transition-colors duration-150"
 														onClick={() => toggleLanguage(option.code)}
 													>
 														<input
 															type="checkbox"
 															checked={tempSelectedLanguages.includes(option.code)}
 															onChange={() => {}}
-															className="h-4 w-4 rounded border-gray-300 bg-white text-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
+															className="h-4 w-4 rounded border-border bg-card text-accent focus:ring-2 focus:ring-accent/20 focus:ring-offset-2 focus:ring-offset-card"
 														/>
 														<span className="ml-3 font-medium">{option.name}</span>
 													</div>
 												))}
 											</div>
 											{/* Action Buttons */}
-											<div className="border-t border-gray-200 p-2 dark:border-gray-700">
+											<div className="border-t border-border p-2">
 												<div className="flex gap-2">
 													<button
 														type="button"
 														onClick={clearLanguageFilter}
-														className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+														className="flex-1 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition hover:bg-muted"
 													>
 														Clear
 													</button>
 													<button
 														type="button"
 														onClick={applyLanguageFilter}
-														className="flex-1 rounded-lg bg-blue-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-blue-600"
+														className="flex-1 rounded-lg bg-accent px-3 py-2 text-xs font-medium text-accent-foreground transition hover:bg-accent-hover"
 													>
 														Apply ({tempSelectedLanguages.length})
 													</button>
@@ -457,7 +457,7 @@ export default function Home() {
 							<div className="flex items-center gap-2">
 								<label
 									htmlFor="genres"
-									className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap"
+									className="text-sm font-medium text-foreground whitespace-nowrap"
 								>
 									Genres
 								</label>
@@ -465,7 +465,7 @@ export default function Home() {
 									<button
 										type="button"
 										onClick={handleGenreDropdown}
-										className="flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-left text-sm text-gray-700 shadow-sm transition-all duration-200 hover:border-gray-900 focus:border-gray-900 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:border-gray-600 min-w-48"
+										className="flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border border-border bg-input px-4 py-2.5 text-left text-sm text-foreground shadow-sm transition-all duration-200 hover:border-accent focus:border-accent focus:outline-none min-w-48"
 									>
 										<span className="truncate">
 											{selectedGenres.length === 0
@@ -481,45 +481,45 @@ export default function Home() {
 														.join(", ")}
 										</span>
 										<ChevronDown
-											className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+											className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
 												isGenreDropdownOpen ? "rotate-180" : ""
 											}`}
 										/>
 									</button>
 
 									{isGenreDropdownOpen && (
-										<div className="absolute right-0 z-50 mt-2 w-full rounded-xl border border-gray-300 bg-white shadow-xl backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900 min-w-48 sm:w-56">
+										<div className="absolute right-0 z-50 mt-2 w-full rounded-xl border border-border bg-card shadow-xl backdrop-blur-sm min-w-48 sm:w-56">
 											<div className="max-h-60 overflow-y-auto p-2">
 												{genres.map((option: { id: number; name: string }) => (
 													<div
 														key={option.id}
-														className="flex items-center rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-150 dark:text-gray-100 dark:hover:bg-gray-800"
+														className="flex items-center rounded-lg px-3 py-2.5 text-sm text-foreground hover:bg-muted cursor-pointer transition-colors duration-150"
 														onClick={() => toggleGenre(option.id)}
 													>
 														<input
 															type="checkbox"
 															checked={tempSelectedGenres.includes(option.id)}
 															onChange={() => {}}
-															className="h-4 w-4 rounded border-gray-300 bg-white text-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:focus:ring-offset-gray-900"
+															className="h-4 w-4 rounded border-border bg-card text-accent focus:ring-2 focus:ring-accent/20 focus:ring-offset-2 focus:ring-offset-card"
 														/>
 														<span className="ml-3 font-medium">{option.name}</span>
 													</div>
 												))}
 											</div>
 											{/* Action Buttons */}
-											<div className="border-t border-gray-200 p-2 dark:border-gray-700">
+											<div className="border-t border-border p-2">
 												<div className="flex gap-2">
 													<button
 														type="button"
 														onClick={clearGenreFilter}
-														className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+														className="flex-1 rounded-lg border border-border bg-card px-3 py-2 text-xs font-medium text-foreground transition hover:bg-muted"
 													>
 														Clear
 													</button>
 													<button
 														type="button"
 														onClick={applyGenreFilter}
-														className="flex-1 rounded-lg bg-blue-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-blue-600"
+														className="flex-1 rounded-lg bg-accent px-3 py-2 text-xs font-medium text-accent-foreground transition hover:bg-accent-hover"
 													>
 														Apply ({tempSelectedGenres.length})
 													</button>
@@ -534,8 +534,8 @@ export default function Home() {
 				</div>
 
 				{error && (
-					<div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 p-4 backdrop-blur-sm">
-						<p className="text-sm text-red-400" role="alert">
+					<div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 backdrop-blur-sm">
+						<p className="text-sm text-destructive" role="alert">
 							{error}
 						</p>
 					</div>
@@ -558,7 +558,7 @@ export default function Home() {
 				</div>
 
 				{!showLoading && movies.length === 0 && !error && (
-					<div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-gray-300 p-6 text-center text-gray-500 dark:border-gray-700 dark:text-gray-400">
+					<div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border p-6 text-center text-muted-foreground">
 						<span className="text-2xl">🎬</span>
 						<p className="text-sm font-medium">No movies found</p>
 						<p className="text-xs">Try adjusting your filters or check back later for new releases.</p>
@@ -573,7 +573,7 @@ export default function Home() {
 							onClick={() => {
 								setPage((p) => p + 1);
 							}}
-							className="rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-500"
+							className="rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-muted"
 						>
 							{loadingMore || moviesLoading ? "Loading..." : "Next"}
 						</button>
@@ -581,14 +581,14 @@ export default function Home() {
 				</div>
 
 				{/* Movies Like Section */}
-				<div className="mt-12 rounded-xl bg-gray-50 border border-gray-200 p-8 dark:bg-gray-900 dark:border-gray-800">
-					<h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Explore Movies Like</h3>
+				<div className="mt-12 rounded-xl bg-card/50 border border-border p-8 backdrop-blur-sm">
+					<h3 className="text-xl font-semibold text-foreground mb-4">Explore Movies Like</h3>
 					<div className="flex flex-wrap gap-4">
 						{popularMovies.map((movie) => (
 							<Link
 								key={movie.id}
 								href={`/movies-like/${movie.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-								className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+								className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
 							>
 								<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
@@ -605,7 +605,7 @@ export default function Home() {
 							<Link
 								key={slug}
 								href={`/movies-like/${slug}`}
-								className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+								className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
 							>
 								<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path

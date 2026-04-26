@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-	--background: #0f0f0f;
-	--foreground: #ffffff;
-	--muted: #1a1a1a;
-	--muted-foreground: #9ca3af;
-	--accent: #dc2626;
-	--accent-hover: #b91c1c;
-	--card: #1a1a1a;
-	--card-foreground: #ffffff;
-	--border: #374151;
-	--input: #1f2937;
-	--ring: #dc2626;
+	--background: #0a0a1a;
+	--foreground: #f8fafc;
+	--muted: #1e1e3f;
+	--muted-foreground: #94a3b8;
+	--accent: #6366f1;
+	--accent-hover: #4f46e5;
+	--card: #15152a;
+	--card-foreground: #f8fafc;
+	--border: #2d2d4a;
+	--input: #1a1a2e;
+	--ring: #6366f1;
 }
 
 @theme inline {
@@ -35,7 +35,7 @@
 }
 
 body {
-	background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+	background: linear-gradient(135deg, #0a0a1a 0%, #15152a 50%, #0a0a1a 100%);
 	color: var(--foreground);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 	font-feature-settings:

@@ -35,8 +35,8 @@ const LogoutButton = ({ initialAuthed }: LogoutButtonProps) => {
 		<button
 			onClick={handleLogout}
 			disabled={loading}
-			className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-sm font-medium text-white transition ${
-				loading ? "bg-gray-400 cursor-not-allowed" : "bg-gray-900 hover:bg-gray-800 cursor-pointer"
+			className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-sm font-medium text-accent-foreground transition ${
+				loading ? "bg-muted cursor-not-allowed" : "bg-accent hover:bg-accent-hover cursor-pointer"
 			}`}
 		>
 			{loading ? "Logging out..." : "Logout"}
