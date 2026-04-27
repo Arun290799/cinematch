@@ -188,7 +188,7 @@ const LikedMoviesPage = () => {
 							Browse movies and tap the heart icon to like them. Your favorites will show up here.
 						</p>
 						<button
-							onClick={() => router.push("/")}
+							onClick={() => router.push("/discover")}
 							className="rounded-lg bg-accent px-6 py-2.5 text-sm font-medium text-accent-foreground transition hover:bg-accent-hover"
 						>
 							Discover Movies

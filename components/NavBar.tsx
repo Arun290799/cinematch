@@ -79,6 +79,14 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 							{showAuthed ? (
 								<>
 									<Link
+										href="/discover"
+										className={`${navLinkClass} ${
+											pathname === "/discover" ? "text-accent" : "text-foreground"
+										}`}
+									>
+										Discover
+									</Link>
+									<Link
 										href="/wishlist"
 										className={`${navLinkClass} ${
 											pathname === "/wishlist" ? "text-accent" : "text-foreground"
@@ -125,6 +133,14 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 								</>
 							) : (
 								<>
+									<Link
+										href="/discover"
+										className={`${navLinkClass} ${
+											pathname === "/discover" ? "text-accent" : "text-foreground"
+										}`}
+									>
+										Discover
+									</Link>
 									<Link
 										href="/contact"
 										className={`${navLinkClass} ${
@@ -188,6 +204,14 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 											Home
 										</Link>
 										<Link
+											href="/discover"
+											className={`${mobileNavLinkClass} ${
+												pathname === "/discover" ? "text-accent" : "text-foreground"
+											}`}
+										>
+											Discover
+										</Link>
+										<Link
 											href="/wishlist"
 											className={`${mobileNavLinkClass} ${
 												pathname === "/wishlist" ? "text-accent" : "text-foreground"
@@ -230,6 +254,14 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									</>
 								) : (
 									<>
+										<Link
+											href="/discover"
+											className={`${mobileNavLinkClass} ${
+												pathname === "/discover" ? "text-accent" : "text-foreground"
+											}`}
+										>
+											Discover
+										</Link>
 										<Link
 											href="/contact"
 											className={`${mobileNavLinkClass} ${

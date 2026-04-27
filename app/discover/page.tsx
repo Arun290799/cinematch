@@ -1,39 +1,34 @@
 "use client";
 
-import { useEffect, useState, useRef, type ChangeEvent } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Loader2, Sparkles, Film, ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useState, useCallback, type ChangeEvent, useRef } from "react";
+import { useAuth } from "@/src/context/AuthContext";
 import MovieCard from "@/components/MovieCard";
 import ScrollToTop from "@/components/ScrollToTop";
-import { useAuth } from "@/src/context/AuthContext";
+import { ChevronDown, X, Heart } from "lucide-react";
+import { useDebounce } from "@/hooks/useDebounce";
+import Link from "next/link";
 import { languages, genres } from "@/src/utils/common";
+import { popularMovieSlugs } from "@/lib/seo/movies";
 
-type Recommendation = {
+type Movie = {
 	id: number;
 	title: string;
 	overview: string;
 	poster_path?: string | null;
-	posterUrl?: string | null;
 	rating?: number | null;
 	year?: number | string | null;
 	genres?: string[];
 	language?: string | null;
 };
 
-const RecommendationsPage = () => {
-	const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-	const router = useRouter();
-
-	const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+export default function Discover() {
+	const { isAuthenticated, isLoading } = useAuth();
+	const [movies, setMovies] = useState<Movie[]>([]);
 	const [page, setPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(1);
+	const [moviesLoading, setMoviesLoading] = useState(false);
 	const [loadingMore, setLoadingMore] = useState(false);
-	const [refreshKey, setRefreshKey] = useState(0);
-	const [likedMovies, setLikedMovies] = useState<Set<number>>(new Set());
+	const [error, setError] = useState<string | null>(null);
+	const [search, setSearch] = useState("");
 	const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 	const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
 	const [tempSelectedLanguages, setTempSelectedLanguages] = useState<string[]>([]);
@@ -42,7 +37,11 @@ const RecommendationsPage = () => {
 	const [isGenreDropdownOpen, setIsGenreDropdownOpen] = useState(false);
 	const [tempSelectedGenres, setTempSelectedGenres] = useState<number[]>([]);
 	const genreDropdownRef = useRef<HTMLDivElement>(null);
+	const [totalPages, setTotalPages] = useState(1);
+	const debouncedSearchQuery = useDebounce(search, 500);
 	const [preferencesLoaded, setPreferencesLoaded] = useState(false);
+	const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+	const [randomSlugs, setRandomSlugs] = useState<string[]>([]);
 
 	// Load saved preferences from localStorage on mount
 	useEffect(() => {
@@ -70,69 +69,28 @@ const RecommendationsPage = () => {
 		}
 	}, []);
 
-	// Check auth then fetch recommendations
+	// Fetch first 3 popular movies from API and set random slugs
 	useEffect(() => {
-		const run = async () => {
-			if (isAuthLoading) return;
-			if (!isAuthenticated) {
-				router.push("/login");
-				setIsCheckingAuth(false);
-				return;
-			}
-			if (!preferencesLoaded) return; // Wait for localStorage to load
-
-			setIsCheckingAuth(false);
-			setLoading(page === 1);
-			setLoadingMore(page > 1);
-			setError(null);
+		const fetchPopularMovies = async () => {
 			try {
-				const params = new URLSearchParams();
-				if (page) params.set("page", page.toString());
-				if (selectedLanguages.length) params.set("languages", selectedLanguages.join(","));
-				if (selectedGenres.length) {
-					const genreNames = selectedGenres
-						.map((id) => genres.find((g) => g.id === id)?.name || "")
-						.filter((name) => name !== "");
-					if (genreNames.length) params.set("genres", genreNames.join(","));
+				const res = await fetch("/api/movies?page=1", { credentials: "include" });
+				if (res.ok) {
+					const data = await res.json();
+					const items = Array.isArray(data?.results) ? data.results : [];
+					setPopularMovies(items.slice(0, 3));
 				}
-
-				const res = await fetch(`/api/recommendations?${params.toString()}`, { credentials: "include" });
-				if (!res.ok) {
-					throw new Error("Failed to load recommendations");
-				}
-
-				const data = await res.json();
-				const items: Recommendation[] = Array.isArray(data?.results) ? data.results : [];
-				const incomingTotalPages =
-					typeof data?.total_pages === "number" && data.total_pages > 0 ? data.total_pages : 1;
-
-				setTotalPages(incomingTotalPages);
-				setRecommendations((prev) => (page === 1 ? items : [...prev, ...items]));
-			} catch (err) {
-				setError(err instanceof Error ? err.message : "Unable to load recommendations");
-				if (page === 1) {
-					setRecommendations([]);
-					setTotalPages(1);
-				}
-			} finally {
-				setLoading(false);
-				setLoadingMore(false);
+			} catch (error) {
+				console.error("Error fetching popular movies:", error);
 			}
 		};
 
-		run();
-	}, [
-		isAuthenticated,
-		isAuthLoading,
-		router,
-		page,
-		refreshKey,
-		selectedLanguages,
-		selectedGenres,
-		preferencesLoaded,
-	]);
+		fetchPopularMovies();
 
-	// Handle click outside for language dropdown
+		// Get 2 random slugs from popularMovieSlugs
+		const shuffled = [...popularMovieSlugs].sort(() => 0.5 - Math.random());
+		setRandomSlugs(shuffled.slice(0, 2));
+	}, []);
+
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target as Node)) {
@@ -182,8 +140,8 @@ const RecommendationsPage = () => {
 	};
 
 	const applyLanguageFilter = () => {
+		setMovies([]);
 		setPage(1);
-		setRefreshKey((prev) => prev + 1);
 		setSelectedLanguages(tempSelectedLanguages);
 		setIsLanguageDropdownOpen(false);
 
@@ -196,8 +154,8 @@ const RecommendationsPage = () => {
 	};
 
 	const applyGenreFilter = () => {
+		setMovies([]);
 		setPage(1);
-		setRefreshKey((prev) => prev + 1);
 		setSelectedGenres(tempSelectedGenres);
 		setIsGenreDropdownOpen(false);
 
@@ -212,8 +170,8 @@ const RecommendationsPage = () => {
 	const clearLanguageFilter = () => {
 		setTempSelectedLanguages([]);
 		setSelectedLanguages([]);
+		setMovies([]);
 		setPage(1);
-		setRefreshKey((prev) => prev + 1);
 		setIsLanguageDropdownOpen(false);
 
 		// Clear from localStorage
@@ -227,8 +185,8 @@ const RecommendationsPage = () => {
 	const clearGenreFilter = () => {
 		setTempSelectedGenres([]);
 		setSelectedGenres([]);
+		setMovies([]);
 		setPage(1);
-		setRefreshKey((prev) => prev + 1);
 		setIsGenreDropdownOpen(false);
 
 		// Clear from localStorage
@@ -247,62 +205,179 @@ const RecommendationsPage = () => {
 		setIsGenreDropdownOpen(!isGenreDropdownOpen);
 	};
 
-	const handleLike = (movieId: number) => {
-		console.log("entered handleLike");
-		setLikedMovies((prev) => {
-			const newLikes = new Set(prev);
-			if (newLikes.has(movieId)) {
-				newLikes.delete(movieId);
+	// Fetch movies for current page and auth state
+	const fetchMovies = useCallback(
+		async (isLoadMore = false) => {
+			if (!preferencesLoaded) return;
+
+			// Prevent multiple simultaneous requests
+			if (isLoadMore ? loadingMore : moviesLoading) return;
+
+			setError(null);
+			if (!isLoadMore) {
+				setMoviesLoading(true);
 			} else {
-				newLikes.add(movieId);
+				setLoadingMore(true);
 			}
-			return newLikes;
-		});
-	};
-	const handlePageChange = () => {
-		console.log("likedMovies.size", likedMovies.size);
-		if (likedMovies.size) {
-			setPage(1);
-			setRefreshKey((prev) => prev + 1);
-			setLikedMovies(new Set());
-		} else {
-			setPage((prev) => prev + 1);
-		}
+
+			try {
+				const params = new URLSearchParams();
+
+				if (debouncedSearchQuery.trim()) {
+					params.set("search", debouncedSearchQuery.trim());
+				}
+
+				if (selectedLanguages.length) {
+					params.set("languages", selectedLanguages.join(","));
+				}
+
+				if (selectedGenres.length) {
+					params.set("genres", selectedGenres.join(","));
+				}
+
+				params.set("page", String(page));
+
+				const endpoint = `/api/movies?${params.toString()}`;
+				const res = await fetch(endpoint, { credentials: "include" });
+
+				if (!res.ok) {
+					throw new Error("Failed to load movies");
+				}
+				const data = await res.json();
+
+				const newMovies: Movie[] = Array.isArray(data?.results) ? data.results : [];
+				setTotalPages(data?.total_pages && data?.total_pages > 0 ? data?.total_pages : 1);
+
+				// Only append if loading more, otherwise replace
+				if (isLoadMore && page > 1) {
+					setMovies((prevMovies) => [...prevMovies, ...newMovies]);
+				} else {
+					setMovies(newMovies);
+				}
+			} catch (err) {
+				setError(err instanceof Error ? err.message : "Unable to load movies right now");
+				setMovies([]);
+				setTotalPages(1);
+			} finally {
+				setMoviesLoading(false);
+				setLoadingMore(false);
+			}
+		},
+		[preferencesLoaded, debouncedSearchQuery, selectedLanguages, selectedGenres, page],
+	);
+
+	useEffect(() => {
+		// Determine if this is a load more operation or fresh fetch
+		const isLoadMore = page > 1;
+		fetchMovies(isLoadMore);
+	}, [
+		isAuthenticated,
+		page,
+		debouncedSearchQuery,
+		selectedLanguages,
+		selectedGenres,
+		preferencesLoaded,
+		fetchMovies,
+	]);
+
+	const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setMovies([]);
+		setPage(1);
+		setSearch(e.target.value);
 	};
 
-	const handleRefresh = () => {
-		setPage(1);
-		setRefreshKey((k) => k + 1);
-		setLikedMovies(new Set());
-	};
-	if (!isAuthenticated && !isAuthLoading) {
-		return null; // redirecting
-	}
+	const showLoading = isLoading || moviesLoading;
+
+	const renderSkeletons = (count: number) =>
+		Array.from({ length: count }).map((_, i) => (
+			<div
+				key={i}
+				className="flex animate-pulse flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+			>
+				<div className="aspect-[2/3] w-full bg-muted" />
+				<div className="space-y-3 p-4">
+					<div className="h-4 w-3/4 rounded bg-muted" />
+					<div className="h-3 w-full rounded bg-muted" />
+					<div className="h-3 w-5/6 rounded bg-muted" />
+				</div>
+			</div>
+		));
 
 	return (
 		<>
-			<div className="min-h-screen">
-				<div className="mx-auto max-w-7xl px-4 py-4 sm:py-6 sm:px-6 lg:px-8">
-					<motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-						<div className="mb-6 flex items-center justify-between gap-3">
-							<div className="flex items-center gap-3">
-								<h1 className="text-3xl font-bold text-foreground">Recommended for you</h1>
-								<Sparkles className="h-6 w-6 text-accent" />
+			<section className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+				<div className="mb-8 space-y-4">
+					<h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Discover Movies</h1>
+					{!isAuthenticated && (
+						<div className="rounded-xl bg-card/50 border border-border p-4 backdrop-blur-sm">
+							<p className="text-muted-foreground">
+								Sign in to get personalized recommendations tailored just for you
+							</p>
+						</div>
+					)}
+					{isAuthenticated && (
+						<div className="rounded-xl bg-gradient-to-r from-accent/10 to-accent/20 border border-accent/30 p-4 backdrop-blur-sm">
+							<div className="flex items-start gap-3">
+								<Heart className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+								<div className="space-y-2">
+									<p className="text-sm text-foreground">
+										<strong>Get Better Recommendations:</strong> Like your favorite movies to help
+										us understand your preferences and provide personalized recommendations just for
+										you.
+									</p>
+									<Link
+										href="/recommendations"
+										className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-hover transition-colors duration-200"
+									>
+										View Your Recommendations
+										<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M9 5l7 7-7 7"
+											/>
+										</svg>
+									</Link>
+								</div>
 							</div>
-							<button
-								type="button"
-								onClick={handleRefresh}
-								title="Like some movies and click refresh to get new recommendations"
-								className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-foreground shadow-sm transition hover:border-accent hover:bg-accent hover:text-accent-foreground"
-							>
-								{loading && page === 1 ? "Refreshing..." : "Refresh"}
-							</button>
+						</div>
+					)}
+				</div>
+
+				<div className="mb-8 space-y-4">
+					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+						<div className="flex-1">
+							<div className="relative">
+								<input
+									type="text"
+									value={search}
+									onChange={handleSearchChange}
+									placeholder="Search movies by title..."
+									className="w-full rounded-xl border border-border bg-input px-4 py-3 pr-12 text-sm text-foreground placeholder-muted-foreground shadow-sm transition-all duration-200 focus:border-accent focus:outline-none"
+								/>
+								<div className="absolute right-3 top-1/2 -translate-y-1/2">
+									<svg
+										className="h-5 w-5 text-muted-foreground"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+										/>
+									</svg>
+								</div>
+							</div>
 						</div>
 
-						{/* Languages and Genres Filters */}
-						<div className="flex items-center gap-3 flex-wrap">
+						{/* Filters */}
+						<div className="flex items-center gap-4 flex-wrap">
 							{/* Languages Filter */}
-							<div className="flex items-center gap-3">
+							<div className="flex items-center gap-2">
 								<label
 									htmlFor="languages"
 									className="text-sm font-medium text-foreground whitespace-nowrap"
@@ -379,7 +454,7 @@ const RecommendationsPage = () => {
 							</div>
 
 							{/* Genres Filter */}
-							<div className="flex items-center gap-3">
+							<div className="flex items-center gap-2">
 								<label
 									htmlFor="genres"
 									className="text-sm font-medium text-foreground whitespace-nowrap"
@@ -455,94 +530,102 @@ const RecommendationsPage = () => {
 								</div>
 							</div>
 						</div>
-					</motion.div>
+					</div>
+				</div>
 
-					{error && (
-						<div className="mb-4 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+				{error && (
+					<div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 backdrop-blur-sm">
+						<p className="text-sm text-destructive" role="alert">
 							{error}
-						</div>
-					)}
+						</p>
+					</div>
+				)}
 
-					{/* Movie Cards Area - Show loader only here */}
-					{loading ? (
-						<div className="flex justify-center py-12">
-							<div className="flex flex-col items-center gap-3">
-								<Loader2 className="h-8 w-8 animate-spin text-accent" />
-								<p className="text-sm text-muted-foreground">Loading recommendations...</p>
-							</div>
-						</div>
-					) : recommendations.length === 0 ? (
-						<motion.div
-							initial={{ opacity: 0, scale: 0.95 }}
-							animate={{ opacity: 1, scale: 1 }}
-							className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-card p-12"
-						>
-							<div className="mb-4 rounded-full bg-muted p-6">
-								<Film className="h-12 w-12 text-muted-foreground" />
-							</div>
-							<h2 className="mb-2 text-xl font-semibold text-foreground">No recommendations yet</h2>
-							<p className="mb-6 max-w-sm text-center text-muted-foreground">
-								Like or wishlist some movies and check back for personalized picks.
-							</p>
-							<button
-								onClick={() => router.push("/discover")}
-								className="rounded-lg bg-accent px-6 py-2.5 text-sm font-medium text-accent-foreground transition hover:bg-accent-hover"
-							>
-								Discover Movies
-							</button>
-						</motion.div>
-					) : (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ delay: 0.1 }}
-							className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-						>
-							{recommendations.map((movie, index) => (
-								<MovieCard
-									key={movie.id}
-									id={movie.id}
-									title={movie.title}
-									overview={movie.overview}
-									posterUrl={movie.posterUrl ?? movie.poster_path}
-									index={index}
-									onLike={handleLike}
-								/>
-							))}
-						</motion.div>
-					)}
+				<div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+					{movies.map((movie, index) => (
+						<MovieCard
+							key={movie.id}
+							id={movie.id}
+							title={movie.title}
+							overview={movie.overview}
+							posterUrl={movie.poster_path}
+							genres={movie.genres}
+							index={index}
+						/>
+					))}
 
-					{/* Pagination */}
-					{!loading && recommendations.length > 0 && (
-						<div className="mt-6 flex items-center justify-start sm:justify-end gap-3">
-							<span className="text-xs text-muted-foreground">
-								Page {page} of {totalPages}
-							</span>
-							{page < totalPages && (
-								<button
-									type="button"
-									disabled={loadingMore}
-									onClick={handlePageChange}
-									className={`rounded-full px-4 py-1.5 text-xs font-semibold shadow-sm transition ${
-										likedMovies.size > 0
-											? "bg-accent text-accent-foreground hover:bg-accent-hover"
-											: "bg-muted text-foreground hover:bg-accent"
-									} disabled:cursor-not-allowed disabled:bg-muted`}
-								>
-									{loadingMore
-										? "Loading..."
-										: likedMovies.size > 0
-											? "Refresh Recommendations"
-											: "Next"}
-								</button>
-							)}
-						</div>
+					{showLoading && renderSkeletons(8)}
+				</div>
+
+				{!showLoading && movies.length === 0 && !error && (
+					<div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border p-6 text-center text-muted-foreground">
+						<span className="text-2xl">🎬</span>
+						<p className="text-sm font-medium">No movies found</p>
+						<p className="text-xs">Try adjusting your filters or check back later for new releases.</p>
+					</div>
+				)}
+				<div className="mt-8 flex items-center justify-start sm:justify-end gap-4">
+					<span className="text-sm text-muted-foreground">Page {page}</span>
+					{page < totalPages && (
+						<button
+							type="button"
+							disabled={moviesLoading || loadingMore}
+							onClick={() => {
+								setPage((p) => p + 1);
+							}}
+							className="rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:bg-muted"
+						>
+							{loadingMore || moviesLoading ? "Loading..." : "Next"}
+						</button>
 					)}
 				</div>
-			</div>
+
+				{/* Movies Like Section */}
+				<div className="mt-12 rounded-xl bg-card/50 border border-border p-8 backdrop-blur-sm">
+					<h3 className="text-xl font-semibold text-foreground mb-4">Explore Movies Like</h3>
+					<div className="flex flex-wrap gap-4">
+						{popularMovies.map((movie) => (
+							<Link
+								key={movie.id}
+								href={`/movies-like/${movie.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+								className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+							>
+								<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+									/>
+								</svg>
+								Movies Like {movie.title}
+							</Link>
+						))}
+						{randomSlugs.map((slug) => (
+							<Link
+								key={slug}
+								href={`/movies-like/${slug}`}
+								className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+							>
+								<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+									/>
+								</svg>
+								Movies Like{" "}
+								{slug
+									.split("-")
+									.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+									.join(" ")}
+							</Link>
+						))}
+					</div>
+				</div>
+			</section>
 			<ScrollToTop />
 		</>
 	);
-};
-
-export default RecommendationsPage;
+}

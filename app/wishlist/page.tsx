@@ -135,7 +135,7 @@ const WatchlistPage = () => {
 							Explore movies and add them to your watchlist to keep track of what you want to watch
 						</p>
 						<button
-							onClick={() => router.push("/")}
+							onClick={() => router.push("/discover")}
 							className="rounded-lg bg-accent px-6 py-2.5 text-sm font-medium text-accent-foreground transition hover:bg-accent-hover"
 						>
 							Discover Movies
