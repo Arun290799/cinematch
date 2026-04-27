@@ -316,6 +316,27 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 													</p>
 												</motion.div>
 
+												{/* Movies Like Link */}
+												<motion.div
+													className="mt-6"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													transition={{ delay: 0.45 }}
+												>
+													<button
+														onClick={() => {
+															const slug = movie.title
+																.toLowerCase()
+																.replace(/[^a-z0-9]+/g, "-")
+																.replace(/^-|-$/g, "");
+															router.push(`/movies-like/${slug}`);
+														}}
+														className="inline-flex items-center gap-2 rounded-lg bg-purple-600 hover:bg-purple-700 px-4 py-2 text-sm font-medium text-white transition-colors"
+													>
+														Find Similar Movies
+													</button>
+												</motion.div>
+
 												{/* OTT Providers */}
 												{movie.ott_providers && movie.ott_providers.hasAny && (
 													<motion.div
