@@ -9,6 +9,7 @@ import { LikeProvider } from "@/src/context/LikeContext";
 import ConditionalNavBar from "@/components/ConditionalNavBar";
 import ConditionalMain from "@/components/ConditionalMain";
 import StructuredData from "@/components/StructuredData";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
 	title: "CineMatch - AI-Powered Movie Recommendations | Discover Your Next Favorite Film",
@@ -94,6 +95,7 @@ export default async function RootLayout({
 								<main className="flex-1">
 									<ConditionalMain>{children}</ConditionalMain>
 								</main>
+								<Footer />
 							</div>
 						</LikeProvider>
 					</WishlistProvider>
