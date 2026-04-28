@@ -122,21 +122,21 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 							animate={{ scale: 1, opacity: 1, y: 0 }}
 							exit={{ scale: 0.95, opacity: 0, y: 20 }}
 							transition={{ type: "spring", damping: 25, stiffness: 300 }}
-							className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-gray-900 shadow-2xl"
+							className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-card shadow-2xl"
 							onClick={(e) => e.stopPropagation()}
 						>
 							{isLoading ? (
 								<div className="flex h-96 items-center justify-center">
-									<Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+									<Loader2 className="h-12 w-12 animate-spin text-accent" />
 								</div>
 							) : error ? (
 								<div className="flex h-96 flex-col items-center justify-center p-8 text-center">
-									<X className="mb-4 h-12 w-12 text-red-500" />
-									<h3 className="text-xl font-semibold text-white">Error Loading Movie</h3>
-									<p className="mt-2 text-gray-400">{error}</p>
+									<X className="mb-4 h-12 w-12 text-destructive" />
+									<h3 className="text-xl font-semibold text-foreground">Error Loading Movie</h3>
+									<p className="mt-2 text-muted-foreground">{error}</p>
 									<button
 										onClick={onClose}
-										className="mt-6 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition hover:bg-blue-700"
+										className="mt-6 rounded-lg bg-accent px-6 py-2 font-medium text-accent-foreground transition hover:bg-accent-hover"
 									>
 										Close
 									</button>
@@ -169,7 +169,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														})`,
 													}}
 												/>
-												<div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent" />
+												<div className="absolute inset-0 bg-gradient-to-t from-card via-card/80 to-transparent" />
 											</>
 										)}
 
@@ -220,14 +220,14 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														className="h-auto w-full rounded-lg shadow-xl"
 													/>
 												) : (
-													<div className="flex h-64 w-full items-center justify-center rounded-lg bg-gray-800 text-gray-400">
+													<div className="flex h-64 w-full items-center justify-center rounded-lg bg-muted text-muted-foreground">
 														No Image
 													</div>
 												)}
 											</motion.div>
 
 											{/* Movie Info */}
-											<div className="flex-1 text-white">
+											<div className="flex-1 text-card-foreground">
 												<motion.h2
 													className="text-3xl font-bold"
 													initial={{ y: -10, opacity: 0 }}
@@ -239,7 +239,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 
 												{movie.tagline && (
 													<motion.p
-														className="mt-2 italic text-gray-400"
+														className="mt-2 italic text-muted-foreground"
 														initial={{ opacity: 0 }}
 														animate={{ opacity: 1 }}
 														transition={{ delay: 0.15 }}
@@ -250,7 +250,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 
 												{/* Metadata Row */}
 												<motion.div
-													className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-300"
+													className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground"
 													initial={{ opacity: 0 }}
 													animate={{ opacity: 1 }}
 													transition={{ delay: 0.2 }}
@@ -295,7 +295,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														{movie.genres.map((genre, index) => (
 															<span
 																key={index}
-																className="rounded-full bg-blue-600/30 px-3 py-1 text-xs font-medium text-blue-200"
+																className="rounded-full bg-accent/30 px-3 py-1 text-xs font-medium text-foreground"
 															>
 																{genre}
 															</span>
@@ -311,7 +311,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 													transition={{ delay: 0.4 }}
 												>
 													<h3 className="mb-2 text-lg font-semibold">Overview</h3>
-													<p className="text-gray-300">
+													<p className="text-muted-foreground">
 														{movie.overview || "No overview available."}
 													</p>
 												</motion.div>
@@ -331,7 +331,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																.replace(/^-|-$/g, "");
 															router.push(`/movies-like/${slug}`);
 														}}
-														className="inline-flex items-center gap-2 rounded-lg bg-purple-600 hover:bg-purple-700 px-4 py-2 text-sm font-medium text-white transition-colors"
+														className="inline-flex items-center gap-2 rounded-lg bg-accent hover:bg-accent-hover px-4 py-2 text-sm font-medium text-accent-foreground transition-colors"
 													>
 														Find Similar Movies
 													</button>
@@ -351,7 +351,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														{movie.ott_providers.stream &&
 															movie.ott_providers.stream.length > 0 && (
 																<div className="mb-4">
-																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-green-400">
+																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-foreground">
 																		<Tv className="h-4 w-4" />
 																		Streaming
 																	</div>
@@ -368,8 +368,8 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																					}
 																					className={
 																						provider.logo
-																							? "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2 hover:bg-green-500/30 transition-colors cursor-pointer"
-																							: "flex items-center gap-2 rounded-lg bg-green-500/20 border border-green-500/30 px-3 py-2 hover:bg-green-500/30 transition-colors cursor-pointer"
+																							? "flex items-center gap-2 rounded-lg bg-accent/20 border border-accent/30 px-3 py-2 hover:bg-accent/30 transition-colors cursor-pointer"
+																							: "flex items-center gap-2 rounded-lg bg-accent/20 border border-accent/30 px-3 py-2 hover:bg-accent/30 transition-colors cursor-pointer"
 																					}
 																				>
 																					{provider.logo ? (
@@ -379,7 +379,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																							className="h-5 w-5 rounded"
 																						/>
 																					) : null}
-																					<span className="text-sm font-medium text-green-200">
+																					<span className="text-sm font-medium text-foreground">
 																						{provider.name}
 																					</span>
 																				</button>
@@ -393,7 +393,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														{movie.ott_providers.rent &&
 															movie.ott_providers.rent.length > 0 && (
 																<div className="mb-4">
-																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-blue-400">
+																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-accent">
 																		<ShoppingCart className="h-4 w-4" />
 																		Rent
 																	</div>
@@ -410,8 +410,8 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																					}
 																					className={
 																						provider.logo
-																							? "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2 hover:bg-blue-500/30 transition-colors cursor-pointer"
-																							: "flex items-center gap-2 rounded-lg bg-blue-500/20 border border-blue-500/30 px-3 py-2 hover:bg-blue-500/30 transition-colors cursor-pointer"
+																							? "flex items-center gap-2 rounded-lg bg-accent/20 border border-accent/30 px-3 py-2 hover:bg-accent/30 transition-colors cursor-pointer"
+																							: "flex items-center gap-2 rounded-lg bg-accent/20 border border-accent/30 px-3 py-2 hover:bg-accent/30 transition-colors cursor-pointer"
 																					}
 																				>
 																					{provider.logo ? (
@@ -421,7 +421,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																							className="h-5 w-5 rounded"
 																						/>
 																					) : null}
-																					<span className="text-sm font-medium text-blue-200">
+																					<span className="text-sm font-medium text-foreground">
 																						{provider.name}
 																					</span>
 																				</button>
@@ -435,7 +435,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														{movie.ott_providers.buy &&
 															movie.ott_providers.buy.length > 0 && (
 																<div className="mb-4">
-																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-orange-400">
+																	<div className="mb-2 flex items-center gap-2 text-sm font-medium text-foreground">
 																		<DollarSign className="h-4 w-4" />
 																		Buy
 																	</div>
@@ -452,8 +452,8 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																					}
 																					className={
 																						provider.logo
-																							? "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2 hover:bg-orange-500/30 transition-colors cursor-pointer"
-																							: "flex items-center gap-2 rounded-lg bg-orange-500/20 border border-orange-500/30 px-3 py-2 hover:bg-orange-500/30 transition-colors cursor-pointer"
+																							? "flex items-center gap-2 rounded-lg bg-accent/20 border border-accent/30 px-3 py-2 hover:bg-accent/30 transition-colors cursor-pointer"
+																							: "flex items-center gap-2 rounded-lg bg-accent/20 border border-accent/30 px-3 py-2 hover:bg-accent/30 transition-colors cursor-pointer"
 																					}
 																				>
 																					{provider.logo ? (
@@ -463,7 +463,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 																							className="h-5 w-5 rounded"
 																						/>
 																					) : null}
-																					<span className="text-sm font-medium text-orange-200">
+																					<span className="text-sm font-medium text-foreground">
 																						{provider.name}
 																					</span>
 																				</button>
@@ -484,7 +484,7 @@ export default function MovieDetails({ isOpen, onClose, movieId }: MovieDetailsP
 														transition={{ delay: 0.5 }}
 													>
 														<h3 className="mb-2 text-lg font-semibold">Status</h3>
-														<p className="text-gray-300">{movie.status}</p>
+														<p className="text-muted-foreground">{movie.status}</p>
 													</motion.div>
 												)}
 											</div>

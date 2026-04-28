@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FC, useState, useEffect } from "react";
 import { Heart, Menu, X, Mail, Film } from "lucide-react";
 import LogoutButton from "./LogoutButton";
+import ThemeToggle from "./ThemeToggle";
 import { useAuth } from "@/src/context/AuthContext";
 import { useWishlist } from "@/src/context/WishlistContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -127,7 +128,8 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									>
 										Contact
 									</Link>
-									<div className="ml-4">
+									<div className="ml-4 flex items-center gap-3">
+										<ThemeToggle />
 										<LogoutButton initialAuthed={showAuthed} />
 									</div>
 								</>
@@ -149,18 +151,21 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 									>
 										Contact
 									</Link>
-									<Link
-										href="/login"
-										className="rounded-lg bg-gradient-to-r from-accent to-accent-hover px-4 py-2 text-sm font-medium text-accent-foreground shadow-sm hover:from-accent-hover hover:to-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-all duration-200"
-									>
-										Sign in
-									</Link>
-									<Link
-										href="/signup"
-										className="ml-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-all duration-200"
-									>
-										Sign up
-									</Link>
+									<div className="ml-4 flex items-center gap-2">
+										<ThemeToggle />
+										<Link
+											href="/login"
+											className="rounded-lg bg-gradient-to-r from-accent to-accent-hover px-4 py-2 text-sm font-medium text-accent-foreground shadow-sm hover:from-accent-hover hover:to-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-all duration-200"
+										>
+											Sign in
+										</Link>
+										<Link
+											href="/signup"
+											className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition-all duration-200"
+										>
+											Sign up
+										</Link>
+									</div>
 								</>
 							)}
 						</div>
@@ -248,7 +253,8 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										>
 											Contact
 										</Link>
-										<div className="pt-2 border-t border-border">
+										<div className="pt-2 border-t border-border flex items-center gap-2">
+											<ThemeToggle />
 											<LogoutButton initialAuthed={showAuthed} />
 										</div>
 									</>
@@ -270,6 +276,9 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										>
 											Contact
 										</Link>
+										<div className="pt-2 border-t border-border flex items-center gap-2">
+											<ThemeToggle />
+										</div>
 										<Link
 											href="/login"
 											className="block w-full px-4 py-3 text-base font-medium text-center text-accent-foreground bg-gradient-to-r from-accent to-accent-hover rounded-md hover:from-accent-hover hover:to-accent transition-colors duration-200"

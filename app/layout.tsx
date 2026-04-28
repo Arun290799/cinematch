@@ -10,6 +10,7 @@ import ConditionalNavBar from "@/components/ConditionalNavBar";
 import ConditionalMain from "@/components/ConditionalMain";
 import StructuredData from "@/components/StructuredData";
 import Footer from "@/components/Footer";
+import { ThemeProvider } from "@/src/context/ThemeContext";
 
 export const metadata: Metadata = {
 	title: "CineMatch - AI-Powered Movie Recommendations | Discover Your Next Favorite Film",
@@ -86,20 +87,22 @@ export default async function RootLayout({
 				<StructuredData />
 			</head>
 			<body className="min-h-screen bg-background text-foreground antialiased">
-				<AuthProvider>
-					<ClientAuthInit />
-					<WishlistProvider>
-						<LikeProvider>
-							<div className="relative flex min-h-screen flex-col">
-								<ConditionalNavBar authed={authed} />
-								<main className="flex-1">
-									<ConditionalMain>{children}</ConditionalMain>
-								</main>
-								<Footer />
-							</div>
-						</LikeProvider>
-					</WishlistProvider>
-				</AuthProvider>
+				<ThemeProvider>
+					<AuthProvider>
+						<ClientAuthInit />
+						<WishlistProvider>
+							<LikeProvider>
+								<div className="relative flex min-h-screen flex-col">
+									<ConditionalNavBar authed={authed} />
+									<main className="flex-1">
+										<ConditionalMain>{children}</ConditionalMain>
+									</main>
+									<Footer />
+								</div>
+							</LikeProvider>
+						</WishlistProvider>
+					</AuthProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

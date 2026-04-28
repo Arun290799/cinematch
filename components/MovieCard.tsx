@@ -150,7 +150,7 @@ const MovieCard: FC<MovieCardProps> = ({
 							type="button"
 							onClick={handleLikeToggle}
 							disabled={isProcessing}
-							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white shadow-md backdrop-blur transition ${
+							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-foreground shadow-md backdrop-blur transition ${
 								isProcessing
 									? "bg-muted text-muted-foreground cursor-wait"
 									: liked
@@ -168,7 +168,7 @@ const MovieCard: FC<MovieCardProps> = ({
 						<button
 							type="button"
 							onClick={handleWishlistToggle}
-							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white shadow-md backdrop-blur transition ${
+							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-foreground shadow-md backdrop-blur transition ${
 								inWishlist
 									? "bg-accent/10 text-accent hover:bg-accent/20"
 									: "bg-muted text-muted-foreground hover:bg-accent/20"
