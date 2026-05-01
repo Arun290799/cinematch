@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Play, Sparkles, Heart, TrendingUp, Users, Zap, ArrowRight } from "lucide-react";
 import PopularMoviesSection from "./discover/PopularMoviesSection";
+import SignInSuggestion from "@/components/SignInSuggestion";
 
 export const metadata = {
 	title: "CineMatch - AI-Powered Movie Recommendations | Discover Your Next Favorite Film",
@@ -224,6 +225,9 @@ export default function Home() {
 					</Link>
 				</div>
 			</section>
+
+			{/* Sign In Suggestion Section */}
+			<SignInSuggestion />
 		</div>
 	);
 }
