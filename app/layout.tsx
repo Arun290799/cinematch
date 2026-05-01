@@ -11,6 +11,7 @@ import ConditionalMain from "@/components/ConditionalMain";
 import StructuredData from "@/components/StructuredData";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/src/context/ThemeContext";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
 	title: "CineMatch - AI-Powered Movie Recommendations | Discover Your Next Favorite Film",
@@ -103,6 +104,7 @@ export default async function RootLayout({
 						</WishlistProvider>
 					</AuthProvider>
 				</ThemeProvider>
+				<Analytics />
 			</body>
 		</html>
 	);
