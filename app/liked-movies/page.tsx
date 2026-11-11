@@ -23,7 +23,7 @@ type LikedMovie = {
 
 const LikedMoviesPage = () => {
 	const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-	const { refetchLikes } = useLike();
+	const { guestLikedMovies, loading: likesLoading, clearAllLikes } = useLike();
 	const router = useRouter();
 
 	const [likedMovies, setLikedMovies] = useState<LikedMovie[]>([]);
@@ -39,8 +39,11 @@ const LikedMoviesPage = () => {
 		const run = async () => {
 			if (isAuthLoading) return;
 			if (!isAuthenticated) {
-				router.push("/login");
 				setIsCheckingAuth(false);
+				if (likesLoading) return;
+				setLikedMovies(guestLikedMovies);
+				setTotalPages(1);
+				setLoading(false);
 				return;
 			}
 
@@ -78,7 +81,7 @@ const LikedMoviesPage = () => {
 		};
 
 		run();
-	}, [isAuthenticated, isAuthLoading, router, page]);
+	}, [isAuthenticated, isAuthLoading, likesLoading, guestLikedMovies, router, page]);
 
 	const handleDeleteAll = async () => {
 		if (!confirm("Are you sure you want to delete all liked movies? This action cannot be undone.")) {
@@ -89,32 +92,16 @@ const LikedMoviesPage = () => {
 		setError(null);
 
 		try {
-			const response = await fetch("/api/likedMovies?deleteAll=true", {
-				method: "DELETE",
-				credentials: "include",
-			});
-
-			if (!response.ok) {
-				throw new Error("Failed to delete all liked movies");
-			}
-
-			// Reset local state
+			await clearAllLikes();
 			setLikedMovies([]);
 			setPage(1);
 			setTotalPages(1);
-
-			// Refetch likes to ensure context is in sync
-			await refetchLikes();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Unable to delete all liked movies");
 		} finally {
 			setIsDeletingAll(false);
 		}
 	};
-
-	if (!isAuthenticated && !isAuthLoading) {
-		return null; // redirecting
-	}
 
 	if ((loading && page === 1) || isAuthLoading || isCheckingAuth) {
 		return (
@@ -162,7 +149,9 @@ const LikedMoviesPage = () => {
 					<p className="text-muted-foreground">
 						{likedMovies.length === 0
 							? "Start liking movies to see them here."
-							: `${likedMovies.length} ${likedMovies.length === 1 ? "movie" : "movies"} liked`}
+							: `${likedMovies.length} ${likedMovies.length === 1 ? "movie" : "movies"} liked${
+									!isAuthenticated ? " (guest likes expire after 24 hours)" : ""
+								}`}
 					</p>
 				</motion.div>
 
@@ -183,7 +172,7 @@ const LikedMoviesPage = () => {
 						<div className="mb-4 rounded-full bg-muted p-6">
 							<Film className="h-12 w-12 text-muted-foreground" />
 						</div>
-						<h2 className="mb-2 text-xl font-semibold text-foreground">You haven't liked any movies yet</h2>
+						<h2 className="mb-2 text-xl font-semibold text-foreground">You haven&apos;t liked any movies yet</h2>
 						<p className="mb-6 max-w-sm text-center text-muted-foreground">
 							Browse movies and tap the heart icon to like them. Your favorites will show up here.
 						</p>

@@ -13,16 +13,18 @@ export async function GET(request: Request) {
 		const page = searchParams.get("page");
 		const languages = searchParams.get("languages");
 		const genres = searchParams.get("genres");
+		const guest = searchParams.get("guest") === "true";
 
 		const backendParams = new URLSearchParams();
 		if (page) backendParams.set("page", page);
 		if (languages) backendParams.set("languages", languages);
 		if (genres) backendParams.set("genres", genres);
+		const endpoint = guest ? "guest-recommendations" : "recommendations";
 
 		const cookie = request.headers.get("cookie");
 
 		const backendRes = await fetch(
-			`${BACKEND_URL}/api/movies/recommendations${
+			`${BACKEND_URL}/api/movies/${endpoint}${
 				backendParams.toString() ? `?${backendParams.toString()}` : ""
 			}`,
 			{

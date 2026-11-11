@@ -25,7 +25,8 @@ export default function SignInSuggestion() {
 									Unlock Personalized Experience
 								</h3>
 								<p className="text-sm text-muted-foreground">
-									Sign in to like movies, build your watchlist, and get AI-powered recommendations
+									Like up to 10 movies and get guest recommendations. Sign in to save your taste profile
+									and build a watchlist.
 								</p>
 							</div>
 						</div>

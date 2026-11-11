@@ -11,6 +11,7 @@ import ConditionalMain from "@/components/ConditionalMain";
 import StructuredData from "@/components/StructuredData";
 import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/src/context/ThemeContext";
+import { ToastProvider } from "@/src/context/ToastContext";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
@@ -89,20 +90,22 @@ export default async function RootLayout({
 			</head>
 			<body className="min-h-screen bg-background text-foreground antialiased">
 				<ThemeProvider>
-					<AuthProvider>
-						<ClientAuthInit />
-						<WishlistProvider>
-							<LikeProvider>
-								<div className="relative flex min-h-screen flex-col">
-									<ConditionalNavBar authed={authed} />
-									<main className="flex-1">
-										<ConditionalMain>{children}</ConditionalMain>
-									</main>
-									<Footer />
-								</div>
-							</LikeProvider>
-						</WishlistProvider>
-					</AuthProvider>
+					<ToastProvider>
+						<AuthProvider>
+							<ClientAuthInit />
+							<WishlistProvider>
+								<LikeProvider>
+									<div className="relative flex min-h-screen flex-col">
+										<ConditionalNavBar authed={authed} />
+										<main className="flex-1">
+											<ConditionalMain>{children}</ConditionalMain>
+										</main>
+										<Footer />
+									</div>
+								</LikeProvider>
+							</WishlistProvider>
+						</AuthProvider>
+					</ToastProvider>
 				</ThemeProvider>
 				<Analytics />
 			</body>

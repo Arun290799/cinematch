@@ -6,41 +6,67 @@ import { MovieDetails } from "./WishlistContext";
 
 interface LikeContextType {
 	likedIds: number[];
+	guestLikedMovies: MovieDetails[];
+	guestLikeLimit: number;
 	isLiked: (movieId: number) => boolean;
 	addLike: (movie: MovieDetails) => Promise<void>;
 	removeLike: (movieId: number) => Promise<void>;
 	toggleLike: (movie: MovieDetails) => Promise<void>;
+	clearAllLikes: () => Promise<void>;
 	loading: boolean;
 	refetchLikes: () => Promise<void>;
 }
+
+type GuestLikedMovie = MovieDetails & {
+	posterPath?: string | null;
+};
+
+type GuestLikesResponse = {
+	results?: GuestLikedMovie[];
+	likedMovieIds?: number[];
+	limit?: number;
+};
 
 const LikeContext = createContext<LikeContextType | undefined>(undefined);
 
 export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const [likedIds, setLikedIds] = useState<number[]>([]);
-	const [loading, setLoading] = useState(false);
-	const { isAuthenticated } = useAuth();
+	const [guestLikedMovies, setGuestLikedMovies] = useState<MovieDetails[]>([]);
+	const [guestLikeLimit, setGuestLikeLimit] = useState(10);
+	const [loading, setLoading] = useState(true);
+	const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
 	const fetchLikes = useCallback(async () => {
-		if (!isAuthenticated) {
-			setLikedIds([]);
-			return;
-		}
+		if (isAuthLoading) return;
 
 		try {
 			setLoading(true);
-			const response = await fetch("/api/likedMovies?ids=1");
+			const response = await fetch(isAuthenticated ? "/api/likedMovies?ids=1" : "/api/guestLikes", {
+				credentials: "include",
+			});
 			const responseData = await response.json();
 
 			if (response.ok) {
-				setLikedIds(responseData?.likedMovieIds || []);
+				if (isAuthenticated) {
+					setLikedIds(responseData?.likedMovieIds || []);
+					setGuestLikedMovies([]);
+				} else {
+					const guestData = responseData as GuestLikesResponse;
+					const movies: MovieDetails[] = (guestData.results || []).map((movie) => ({
+						...movie,
+						posterUrl: movie.posterPath || "",
+					}));
+					setGuestLikedMovies(movies);
+					setLikedIds(guestData.likedMovieIds || movies.map((movie) => movie.movieId));
+					setGuestLikeLimit(guestData.limit || 10);
+				}
 			}
 		} catch (error) {
 			console.error("Failed to fetch likes:", error);
 		} finally {
 			setLoading(false);
 		}
-	}, [isAuthenticated]);
+	}, [isAuthenticated, isAuthLoading]);
 
 	useEffect(() => {
 		fetchLikes();
@@ -53,27 +79,33 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 	const addLike = useCallback(
 		async (movie: MovieDetails) => {
-			if (!isAuthenticated) {
-				throw new Error("Please login to like movies");
-			}
-
 			try {
-				const response = await fetch("/api/likedMovies", {
+				const response = await fetch(isAuthenticated ? "/api/likedMovies" : "/api/guestLikes", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
+					credentials: "include",
 					body: JSON.stringify(movie),
 				});
 
 				if (response.ok) {
-					setLikedIds((prev) => (prev.includes(movie.movieId) ? prev : [...prev, movie.movieId]));
+					const responseData = await response.json();
+					if (Array.isArray(responseData?.likedMovieIds)) {
+						setLikedIds(responseData.likedMovieIds);
+					} else {
+						setLikedIds((prev) => (prev.includes(movie.movieId) ? prev : [...prev, movie.movieId]));
+					}
+					if (!isAuthenticated) {
+						setGuestLikedMovies((prev) =>
+							prev.some((likedMovie) => likedMovie.movieId === movie.movieId) ? prev : [movie, ...prev],
+						);
+					}
 				} else {
 					const data = await response.json();
 					throw new Error(data.error || "Failed to like movie");
 				}
 			} catch (error) {
-				console.error("Add like error:", error);
 				throw error;
 			}
 		},
@@ -82,21 +114,26 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 	const removeLike = useCallback(
 		async (movieId: number) => {
-			if (!isAuthenticated) {
-				throw new Error("Please login to manage likes");
-			}
-
 			try {
-				const response = await fetch("/api/likedMovies", {
+				const response = await fetch(isAuthenticated ? "/api/likedMovies" : "/api/guestLikes", {
 					method: "DELETE",
 					headers: {
 						"Content-Type": "application/json",
 					},
+					credentials: "include",
 					body: JSON.stringify({ movieId }),
 				});
 
 				if (response.ok) {
-					setLikedIds((prev) => prev.filter((id) => id !== movieId));
+					const responseData = await response.json();
+					if (Array.isArray(responseData?.likedMovieIds)) {
+						setLikedIds(responseData.likedMovieIds);
+					} else {
+						setLikedIds((prev) => prev.filter((id) => id !== movieId));
+					}
+					if (!isAuthenticated) {
+						setGuestLikedMovies((prev) => prev.filter((movie) => movie.movieId !== movieId));
+					}
 				} else {
 					const data = await response.json();
 					throw new Error(data.error || "Failed to remove like");
@@ -108,6 +145,22 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		},
 		[isAuthenticated]
 	);
+
+	const clearAllLikes = useCallback(async () => {
+		const response = await fetch(
+			isAuthenticated ? "/api/likedMovies?deleteAll=true" : "/api/guestLikes?deleteAll=true",
+			{ method: "DELETE", credentials: "include" },
+		);
+		const data = await response.json();
+		if (!response.ok) {
+			throw new Error(data.error || "Failed to clear liked movies");
+		}
+
+		setLikedIds([]);
+		if (!isAuthenticated) {
+			setGuestLikedMovies([]);
+		}
+	}, [isAuthenticated]);
 
 	const toggleLike = useCallback(
 		async (movie: MovieDetails) => {
@@ -125,7 +178,20 @@ export const LikeProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	}, [fetchLikes]);
 
 	return (
-		<LikeContext.Provider value={{ likedIds, isLiked, addLike, removeLike, toggleLike, loading, refetchLikes }}>
+		<LikeContext.Provider
+			value={{
+				likedIds,
+				guestLikedMovies,
+				guestLikeLimit,
+				isLiked,
+				addLike,
+				removeLike,
+				toggleLike,
+				clearAllLikes,
+				loading,
+				refetchLikes,
+			}}
+		>
 			{children}
 		</LikeContext.Provider>
 	);
@@ -138,4 +204,3 @@ export const useLike = () => {
 	}
 	return context;
 };
-

@@ -18,6 +18,7 @@ A modern, responsive movie discovery and recommendation platform built with Next
 ### ❤️ Interactive Features
 
 -   **Like Movies**: Build your taste profile by liking favorite movies
+-   **Guest Likes and Recommendations**: Like up to 10 movies and view up to 2 pages of personalized recommendations without an account; guest likes expire after 24 hours
 -   **Watchlist Management**: Save movies to watch later
 -   **Responsive Design**: Optimized for mobile, tablet, and desktop experiences
 

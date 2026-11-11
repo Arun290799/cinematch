@@ -308,41 +308,32 @@ export default function Discover() {
 			<section className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
 				<div className="mb-8 space-y-4">
 					<h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">Discover Movies</h1>
-					{!isAuthenticated && (
-						<div className="rounded-xl bg-card/50 border border-border p-4 backdrop-blur-sm">
-							<p className="text-muted-foreground">
-								Sign in to get personalized recommendations tailored just for you
-							</p>
-						</div>
-					)}
-					{isAuthenticated && (
-						<div className="rounded-xl bg-gradient-to-r from-accent/10 to-accent/20 border border-accent/30 p-4 backdrop-blur-sm">
-							<div className="flex items-start gap-3">
-								<Heart className="h-5 w-5 text-accent mt-0.5 shrink-0" />
-								<div className="space-y-2">
-									<p className="text-sm text-foreground">
-										<strong>Get Better Recommendations:</strong> Like your favorite movies to help
-										us understand your preferences and provide personalized recommendations just for
-										you.
-									</p>
-									<Link
-										href="/recommendations"
-										className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-hover transition-colors duration-200"
-									>
-										View Your Recommendations
-										<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M9 5l7 7-7 7"
-											/>
-										</svg>
-									</Link>
-								</div>
+					<div className="rounded-xl bg-gradient-to-r from-accent/10 to-accent/20 border border-accent/30 p-4 backdrop-blur-sm">
+						<div className="flex items-start gap-3">
+							<Heart className="h-5 w-5 text-accent mt-0.5 shrink-0" />
+							<div className="space-y-2">
+								<p className="text-sm text-foreground">
+									<strong>Get Better Recommendations:</strong> Like your favorite movies to help
+									us understand your preferences and provide personalized recommendations just for
+									you.
+								</p>
+								<Link
+									href="/recommendations"
+									className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-hover transition-colors duration-200"
+								>
+									View Your Recommendations
+									<svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M9 5l7 7-7 7"
+										/>
+									</svg>
+								</Link>
 							</div>
 						</div>
-					)}
+					</div>
 				</div>
 
 				<div className="mb-8 space-y-4">

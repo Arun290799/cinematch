@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useRef, type ChangeEvent } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2, Sparkles, Film, ChevronDown } from "lucide-react";
 import MovieCard from "@/components/MovieCard";
 import ScrollToTop from "@/components/ScrollToTop";
 import { useAuth } from "@/src/context/AuthContext";
+import { useLike } from "@/src/context/LikeContext";
 import { languages, genres } from "@/src/utils/common";
 
 type Recommendation = {
@@ -23,14 +24,15 @@ type Recommendation = {
 
 const RecommendationsPage = () => {
 	const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+	const { likedIds, guestLikeLimit } = useLike();
 	const router = useRouter();
 
 	const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 	const [page, setPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
+	const [guestLimitReached, setGuestLimitReached] = useState(false);
 	const [loadingMore, setLoadingMore] = useState(false);
 	const [refreshKey, setRefreshKey] = useState(0);
 	const [likedMovies, setLikedMovies] = useState<Set<number>>(new Set());
@@ -74,20 +76,15 @@ const RecommendationsPage = () => {
 	useEffect(() => {
 		const run = async () => {
 			if (isAuthLoading) return;
-			if (!isAuthenticated) {
-				router.push("/login");
-				setIsCheckingAuth(false);
-				return;
-			}
 			if (!preferencesLoaded) return; // Wait for localStorage to load
 
-			setIsCheckingAuth(false);
 			setLoading(page === 1);
 			setLoadingMore(page > 1);
 			setError(null);
 			try {
 				const params = new URLSearchParams();
 				if (page) params.set("page", page.toString());
+				if (!isAuthenticated) params.set("guest", "true");
 				if (selectedLanguages.length) params.set("languages", selectedLanguages.join(","));
 				if (selectedGenres.length) {
 					const genreNames = selectedGenres
@@ -107,12 +104,14 @@ const RecommendationsPage = () => {
 					typeof data?.total_pages === "number" && data.total_pages > 0 ? data.total_pages : 1;
 
 				setTotalPages(incomingTotalPages);
+				setGuestLimitReached(!isAuthenticated && data?.guest_limit_reached === true);
 				setRecommendations((prev) => (page === 1 ? items : [...prev, ...items]));
 			} catch (err) {
 				setError(err instanceof Error ? err.message : "Unable to load recommendations");
 				if (page === 1) {
 					setRecommendations([]);
 					setTotalPages(1);
+					setGuestLimitReached(false);
 				}
 			} finally {
 				setLoading(false);
@@ -124,7 +123,6 @@ const RecommendationsPage = () => {
 	}, [
 		isAuthenticated,
 		isAuthLoading,
-		router,
 		page,
 		refreshKey,
 		selectedLanguages,
@@ -167,7 +165,7 @@ const RecommendationsPage = () => {
 
 	const toggleLanguage = (language: string) => {
 		setTempSelectedLanguages((prev: string[]) => {
-			let newLanguages = prev.includes(language)
+			const newLanguages = prev.includes(language)
 				? prev.filter((lang: string) => lang !== language)
 				: [...prev, language];
 			return newLanguages;
@@ -176,7 +174,7 @@ const RecommendationsPage = () => {
 
 	const toggleGenre = (genreId: number) => {
 		setTempSelectedGenres((prev: number[]) => {
-			let newGenres = prev.includes(genreId) ? prev.filter((id: number) => id !== genreId) : [...prev, genreId];
+			const newGenres = prev.includes(genreId) ? prev.filter((id: number) => id !== genreId) : [...prev, genreId];
 			return newGenres;
 		});
 	};
@@ -275,10 +273,6 @@ const RecommendationsPage = () => {
 		setRefreshKey((k) => k + 1);
 		setLikedMovies(new Set());
 	};
-	if (!isAuthenticated && !isAuthLoading) {
-		return null; // redirecting
-	}
-
 	return (
 		<>
 			<div className="min-h-screen">
@@ -298,6 +292,12 @@ const RecommendationsPage = () => {
 								{loading && page === 1 ? "Refreshing..." : "Refresh"}
 							</button>
 						</div>
+						{!isAuthenticated && (
+							<p className="mb-4 text-sm text-muted-foreground">
+								Guest likes: {likedIds.length}/{guestLikeLimit}. Sign in to save your taste profile and like
+								more movies.
+							</p>
+						)}
 
 						{/* Languages and Genres Filters */}
 						<div className="flex items-center gap-3 flex-wrap">
@@ -482,7 +482,9 @@ const RecommendationsPage = () => {
 							</div>
 							<h2 className="mb-2 text-xl font-semibold text-foreground">No recommendations yet</h2>
 							<p className="mb-6 max-w-sm text-center text-muted-foreground">
-								Like or wishlist some movies and check back for personalized picks.
+								{!isAuthenticated && likedIds.length === 0
+									? "Like movies to build your taste profile. Guest likes are saved for 24 hours."
+									: "Like some movies and check back for personalized picks."}
 							</p>
 							<button
 								onClick={() => router.push("/discover")}
@@ -509,6 +511,21 @@ const RecommendationsPage = () => {
 									onLike={handleLike}
 								/>
 							))}
+							{loadingMore &&
+								Array.from({ length: 10 }, (_, index) => (
+									<div
+										key={`recommendation-skeleton-${index}`}
+										className="flex animate-pulse flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+										aria-hidden="true"
+									>
+										<div className="aspect-[2/3] w-full bg-muted" />
+										<div className="space-y-3 p-4">
+											<div className="h-4 w-3/4 rounded bg-muted" />
+											<div className="h-3 w-full rounded bg-muted" />
+											<div className="h-3 w-5/6 rounded bg-muted" />
+										</div>
+									</div>
+								))}
 						</motion.div>
 					)}
 
@@ -536,6 +553,21 @@ const RecommendationsPage = () => {
 											: "Next"}
 								</button>
 							)}
+						</div>
+					)}
+					{!loading && guestLimitReached && (
+						<div className="mt-6 rounded-xl border border-accent/30 bg-accent/10 p-4 text-center">
+							<p className="mb-3 text-sm text-foreground">
+								You’ve reached the 2-page guest recommendation limit. Sign in to get more personalized
+								recommendations.
+							</p>
+							<button
+								type="button"
+								onClick={() => router.push("/login")}
+								className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition hover:bg-accent-hover"
+							>
+								Sign in for more recommendations
+							</button>
 						</div>
 					)}
 				</div>

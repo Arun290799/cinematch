@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(cookie && { cookie }),
       },
       body: JSON.stringify(body),
       credentials: "include",

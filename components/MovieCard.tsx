@@ -1,13 +1,14 @@
 "use client";
 
 import { FC, MouseEvent, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Heart, Bookmark, Star, PlayCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import MovieDetails from "./MovieDetails";
 import { useAuth } from "@/src/context/AuthContext";
 import { useWishlist } from "@/src/context/WishlistContext";
 import { useLike } from "@/src/context/LikeContext";
+import { useToast } from "@/src/context/ToastContext";
 
 export type MovieCardProps = {
 	id: number;
@@ -47,9 +48,10 @@ const MovieCard: FC<MovieCardProps> = ({
 }) => {
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 	const router = useRouter();
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 	const { isInWishlist, toggleWishlist } = useWishlist();
-	const { isLiked, toggleLike } = useLike();
+	const { isLiked, toggleLike, loading: likesLoading } = useLike();
+	const { showToast } = useToast();
 	// const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
 	const inWishlist = isInWishlist(id);
 	const liked = isLiked(id);
@@ -81,16 +83,14 @@ const MovieCard: FC<MovieCardProps> = ({
 				genres,
 				overview,
 			});
-		} catch (error) {}
+		} catch (error) {
+			console.error("Error toggling wishlist:", error);
+		}
 	};
 
 	const handleLikeToggle = async (e: MouseEvent) => {
 		e.stopPropagation();
 
-		if (!isAuthenticated) {
-			router.push("/login");
-			return;
-		}
 		if (isProcessing) return;
 		setIsProcessing(true);
 
@@ -108,7 +108,7 @@ const MovieCard: FC<MovieCardProps> = ({
 				onLike(id);
 			}
 		} catch (error) {
-			console.error("Error toggling like:", error);
+			showToast(error instanceof Error ? error.message : "Unable to update like");
 		} finally {
 			setIsProcessing(false);
 		}
@@ -149,7 +149,7 @@ const MovieCard: FC<MovieCardProps> = ({
 						<button
 							type="button"
 							onClick={handleLikeToggle}
-							disabled={isProcessing}
+							disabled={isProcessing || isAuthLoading || likesLoading}
 							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-foreground shadow-md backdrop-blur transition ${
 								isProcessing
 									? "bg-muted text-muted-foreground cursor-wait"
@@ -192,7 +192,7 @@ const MovieCard: FC<MovieCardProps> = ({
 						<button
 							type="button"
 							onClick={handleLikeToggle}
-							disabled={isProcessing}
+							disabled={isProcessing || isAuthLoading || likesLoading}
 							className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm transition ${
 								isProcessing
 									? "bg-muted text-muted-foreground cursor-wait"

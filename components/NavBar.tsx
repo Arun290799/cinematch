@@ -144,6 +144,22 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 										Discover
 									</Link>
 									<Link
+										href="/liked-movies"
+										className={`${navLinkClass} ${
+											pathname === "/liked-movies" ? "text-accent" : "text-foreground"
+										}`}
+									>
+										Liked Movies
+									</Link>
+									<Link
+										href="/recommendations"
+										className={`${navLinkClass} ${
+											pathname === "/recommendations" ? "text-accent" : "text-foreground"
+										}`}
+									>
+										Recommendations
+									</Link>
+									<Link
 										href="/contact"
 										className={`${navLinkClass} ${
 											pathname === "/contact" ? "text-accent" : "text-foreground"
@@ -267,6 +283,22 @@ const NavBar: FC<NavBarProps> = ({ authed }) => {
 											}`}
 										>
 											Discover
+										</Link>
+										<Link
+											href="/liked-movies"
+											className={`${mobileNavLinkClass} ${
+												pathname === "/liked-movies" ? "text-accent" : "text-foreground"
+											}`}
+										>
+											Liked Movies
+										</Link>
+										<Link
+											href="/recommendations"
+											className={`${mobileNavLinkClass} ${
+												pathname === "/recommendations" ? "text-accent" : "text-foreground"
+											}`}
+										>
+											Recommendations
 										</Link>
 										<Link
 											href="/contact"
